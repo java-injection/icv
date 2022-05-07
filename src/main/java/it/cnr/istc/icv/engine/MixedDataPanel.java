@@ -1678,7 +1678,9 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
                                     int xxxx = startDataX + sX - 4;
                                     int yyyy = yData - 4 + increment / 2 - (int) (yyy);
                                     points.add(new Point(xxxx, yyyy));
-                                    if (((LinearDataContainerInterface) container).isDotVisible()) {
+                                    boolean chartWithDots = ((LinearDataContainerInterface) container).isChartWithDots(subName);
+//                                    System.out.println(subName+" vuole i pallini ? "+chartWithDots);
+                                    if (((LinearDataContainerInterface) container).isDotVisible() && chartWithDots) {
                                         Ellipse2D.Double circle = new Ellipse2D.Double(xxxx, yyyy, 8, 8);
                                         g1.fill(circle);
                                     }
