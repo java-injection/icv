@@ -43,4 +43,8 @@ public interface LinearDataContainerInterface<T extends TimeDataInterface> exten
     
     public Color getColorBySubChartName(String subChart);
     
+    public void setSubChartWithDots(String subChart, boolean dotsVisible);
+    
+    public boolean isChartWithDots(String subChart);
+    
 }

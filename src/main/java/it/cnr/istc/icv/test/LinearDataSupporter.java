@@ -23,6 +23,7 @@ public class LinearDataSupporter<T extends TimeDataInterface> implements LinearD
     private String name;
     private Map<String, List<T>> dataMap = new HashMap<String, List<T>>();
     private Map<String, Color> dataColor = new HashMap<String,Color>();
+    private Map<String, Boolean> dotsMap = new HashMap<String,Boolean>();
     private boolean discret = false;
     private int minValueToShow = 0;
     private int maxValueToShow = 200;
@@ -43,9 +44,7 @@ public class LinearDataSupporter<T extends TimeDataInterface> implements LinearD
     }
     
     public void setColorToSubChart(String subChart, Color color){
-        if(!dataColor.containsKey(subChart)){
             this.dataColor.put(subChart, color);
-        }
     }
     
     public Color getColorBySubChartName(String subChart){
@@ -171,7 +170,20 @@ public class LinearDataSupporter<T extends TimeDataInterface> implements LinearD
             ((Collection)dataMap.get(string)).clear();
         }
         dataMap.clear();
-        dataColor.clear();
+//        dataColor.clear();
+    }
+
+    @Override
+    public void setSubChartWithDots(String subChart, boolean dotsVisible) {
+        this.dotsMap.put(subChart, dotsVisible);
+    }
+
+    @Override
+    public boolean isChartWithDots(String subChart) {
+       if(this.dotsMap.containsKey(subChart)){
+           return this.dotsMap.get(subChart);
+       }
+       return false;
     }
 
     

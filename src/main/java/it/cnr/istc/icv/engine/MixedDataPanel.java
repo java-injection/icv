@@ -223,12 +223,12 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 //        this.add(jLayer);
 
     }
-    
-    public synchronized void setFloatableNow(long now){
+
+    public synchronized void setFloatableNow(long now) {
         this.floatableNow = now;
     }
-    
-    public void normalNow(){
+
+    public void normalNow() {
         this.floatableNow = Long.MIN_VALUE;
     }
 
@@ -1533,14 +1533,22 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
                         double dt_range = 0;
                         HashMap<String, Color> hashMap = new HashMap<String, Color>();
                         for (String subName : keySet1) {
-                            //                                System.out.println("sub name to paint : " + subName);
                             ArrayList<TimeDataInterface> dtiData = new ArrayList(valuesMap.get(subName));
 
-                            hashMap.put(subName, (Color) this.supplyColor.getNextPaint());
+                            if (((LinearDataContainerInterface) container).getColorBySubChartName(subName) != null) {
+                                hashMap.put(subName, ((LinearDataContainerInterface) container).getColorBySubChartName(subName));
+//                                System.out.println("COLORONE TROVATO");
+                                subnamesColorMap.put(subName,hashMap.get(subName));
+                            } else {
+//                                System.out.println("NON HO TROVATO ..SBRUGNOOO");
+                                Color colorino = (Color) this.supplyColor.getNextPaint();
+                                hashMap.put(subName, colorino);
+                                subnamesColorMap.put(subName,colorino);
+                            }
                             this.legendMap.put(dataBar, hashMap);
 
                             Iterator<TimeDataInterface> iteratorDtiData = dtiData.iterator();
-                            while(iteratorDtiData.hasNext()) {
+                            while (iteratorDtiData.hasNext()) {
                                 TimeDataInterface t = iteratorDtiData.next();
                                 double value = ((TimeValueDataInterface) t).getValue();
                                 //                                    System.out.println("value -> " + value);
@@ -1628,6 +1636,7 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 
                         //----------------------
                         supplyColor = new PaintSupplier();
+//s
 
                         for (String subName : keySet1) {
                             //                                System.out.println("sub name to paint : " + subName);
@@ -1640,20 +1649,23 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
                             //                                minMaxOutMap.put("lastMax", null);
                             //                                localMin+=dt_range*0.2;
                             //                                localMax-=dt_range*0.2;
-                            if (!this.subnamesColorMap.containsKey(subName)) {
-                                Paint nextPaint = supplyColor.getNextPaint();
-                                similarTo(alternateColor, (Color) nextPaint);
-                                subnamesColorMap.put(subName, nextPaint);
-                            }
+//                            if (!this.subnamesColorMap.containsKey(subName)) {
+//                                Paint nextPaint = supplyColor.getNextPaint();
+//                                similarTo(alternateColor, (Color) nextPaint);
+//                                subnamesColorMap.put(subName, nextPaint);
+//                            }
                             Paint nextPaint = subnamesColorMap.get(subName);
                             Iterator<TimeDataInterface> iteratorDtiData = dtiData.iterator();
-                            while(iteratorDtiData.hasNext()) {
+                            while (iteratorDtiData.hasNext()) {
                                 TimeDataInterface t = iteratorDtiData.next();
                                 if (t instanceof TimeValueDataInterface) {
                                     // TIME VALUE DATA INTERFACE !
 
                                     //                                        System.out.println("data time stamp : " + t.getTimeStamp().toString());
                                     long time = t.getTimeStamp().getTime();
+                                    if (data_range == 0) {
+                                        continue;
+                                    }
                                     int startDataX = (int) (((time - startRange) * wX) / data_range);
 
                                     int yData = this.dataCoordinateMap.get(dataBar);
@@ -1674,398 +1686,406 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
                                 }
 
                             }
-                        
-                        //                                System.out.println("size of data ->" + dtiData.size());
-                        //                                System.out.println("size of points -> " + points.size());
-                        for (int i = 0; i < points.size(); i++) {
-                            //                                    if (dtiData.get(i) instanceof TimeValueDataInterface) {
-                            //                                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            //A TRATTINI
-                            //                                        float[] dash1 = {2f, 0f, 2f};
-                            //                                        BasicStroke bs1 = new BasicStroke(1, BasicStroke.CAP_BUTT,
-                            //                                                BasicStroke.JOIN_ROUND, 1.0f, dash1, 2f);
-                            //                                        g1.setStroke(bs1);
 
-                            if (i == points.size() - 1) {
-                                break;
-                            }
+                            //                                System.out.println("size of data ->" + dtiData.size());
+                            //                                System.out.println("size of points -> " + points.size());
+                            for (int i = 0; i < points.size(); i++) {
+                                //                                    if (dtiData.get(i) instanceof TimeValueDataInterface) {
+                                //                                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                //A TRATTINI
+                                //                                        float[] dash1 = {2f, 0f, 2f};
+                                //                                        BasicStroke bs1 = new BasicStroke(1, BasicStroke.CAP_BUTT,
+                                //                                                BasicStroke.JOIN_ROUND, 1.0f, dash1, 2f);
+                                //                                        g1.setStroke(bs1);
 
-                            RenderingHints rh = new RenderingHints(
-                                    RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
+                                if (i == points.size() - 1) {
+                                    break;
+                                }
 
-                            rh.put(RenderingHints.KEY_RENDERING,
-                                    RenderingHints.VALUE_RENDER_QUALITY);
+                                RenderingHints rh = new RenderingHints(
+                                        RenderingHints.KEY_ANTIALIASING,
+                                        RenderingHints.VALUE_ANTIALIAS_ON);
 
-                            g1.setRenderingHints(rh);
+                                rh.put(RenderingHints.KEY_RENDERING,
+                                        RenderingHints.VALUE_RENDER_QUALITY);
 
-                            BasicStroke bs1 = new BasicStroke(2, BasicStroke.CAP_BUTT,
-                                    BasicStroke.JOIN_BEVEL);
-                            g1.setStroke(bs1);
+                                g1.setRenderingHints(rh);
+
+                                BasicStroke bs1 = new BasicStroke(2, BasicStroke.CAP_BUTT,
+                                        BasicStroke.JOIN_BEVEL);
+                                g1.setStroke(bs1);
 //                                g1.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 //                                Setting the RenderingHint KEY_STROKE_COTROL to VALUE_STROKE_PURE 
-                            g1.drawLine(points.get(i).x + 4, points.get(i).y + 4, points.get(i + 1).x + 4, points.get(i + 1).y + 4);
-                            //                                    }
+                                g1.drawLine(points.get(i).x + 4, points.get(i).y + 4, points.get(i + 1).x + 4, points.get(i + 1).y + 4);
+                                //                                    }
 
+                            }
                         }
-                    }
-                    if (((LinearDataContainerInterface) container).isMaxThresholdPaintable()) {
-                        int maximumThreshold = (int) ((LinearDataContainerInterface) container).getMaximumThreshold();
-                        int yData = this.dataCoordinateMap.get(dataBar);
-                        double yyy = dt_range == 0 ? yData : ((maximumThreshold - localMin) * increment) / dt_range;
+                        if (((LinearDataContainerInterface) container).isMaxThresholdPaintable()) {
+                            int maximumThreshold = (int) ((LinearDataContainerInterface) container).getMaximumThreshold();
+                            int yData = this.dataCoordinateMap.get(dataBar);
+                            double yyy = dt_range == 0 ? yData : ((maximumThreshold - localMin) * increment) / dt_range;
 
-                        BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
-                                BasicStroke.JOIN_BEVEL);
-                        g1.setStroke(bs1);
-                        g1.setPaint(Color.RED);
-                        int yyyy = yData + increment / 2 - (int) (yyy);
-                        Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
-                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g1.draw(line);
-                        Font maxFont = new Font("SansSerif", Font.BOLD, 12);
-                        llffm = g.getFontMetrics(maxFont);
-                        g.setFont(maxFont);
-                        g1.drawString("max = " + maximumThreshold, sX + 10, yyyy - 5);
-                    }
-                    if (((LinearDataContainerInterface) container).isMinThresholdPaintable()) {
-                        int minimumThreshold = (int) ((LinearDataContainerInterface) container).getMinimumThreshold();
-                        int yData = this.dataCoordinateMap.get(dataBar);
-                        double yyy = dt_range == 0 ? yData : ((minimumThreshold - localMin) * increment) / dt_range;
+                            BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
+                                    BasicStroke.JOIN_BEVEL);
+                            g1.setStroke(bs1);
+                            g1.setPaint(Color.RED);
+                            int yyyy = yData + increment / 2 - (int) (yyy);
+                            Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
+                            g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            g1.draw(line);
+                            Font maxFont = new Font("SansSerif", Font.BOLD, 12);
+                            llffm = g.getFontMetrics(maxFont);
+                            g.setFont(maxFont);
+                            g1.drawString("max = " + maximumThreshold, sX + 10, yyyy - 5);
+                        }
+                        if (((LinearDataContainerInterface) container).isMinThresholdPaintable()) {
+                            int minimumThreshold = (int) ((LinearDataContainerInterface) container).getMinimumThreshold();
+                            int yData = this.dataCoordinateMap.get(dataBar);
+                            double yyy = dt_range == 0 ? yData : ((minimumThreshold - localMin) * increment) / dt_range;
 
-                        BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
-                                BasicStroke.JOIN_BEVEL);
-                        g1.setStroke(bs1);
-                        g1.setPaint(Color.GREEN);
-                        int yyyy = yData + increment / 2 - (int) (yyy);
-                        Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
-                        ((Graphics2D) g).draw(line);
-                        Font minfFont = new Font("SansSerif", Font.BOLD, 12);
-                        llffm = g.getFontMetrics(minfFont);
-                        g.setFont(minfFont);
-                        g1.drawString("min = " + minimumThreshold, sX + 10, yyyy - 5);
-                    }
+                            BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
+                                    BasicStroke.JOIN_BEVEL);
+                            g1.setStroke(bs1);
+                            g1.setPaint(Color.GREEN);
+                            int yyyy = yData + increment / 2 - (int) (yyy);
+                            Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
+                            ((Graphics2D) g).draw(line);
+                            Font minfFont = new Font("SansSerif", Font.BOLD, 12);
+                            llffm = g.getFontMetrics(minfFont);
+                            g.setFont(minfFont);
+                            g1.drawString("min = " + minimumThreshold, sX + 10, yyyy - 5);
+                        }
 
-                }
-                //</editor-fold>
-                //<editor-fold defaultstate="collapsed" desc="DISCRETE">
-                if (LinearDataContainerInterface.class.isInstance(container) && ((LinearDataContainerInterface) container).isDiscret()) {
+                    }
+                    //</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="DISCRETE">
+                    if (LinearDataContainerInterface.class.isInstance(container) && ((LinearDataContainerInterface) container).isDiscret()) {
 //                        System.out.println(" DISCRETE !!!");
 //                        for (ActivityDataInterface data : ((LinearDataContainerInterface) container).) {
 
 //                        System.out.println(dataBar + " is Linear Data Interface !!");
-                    //************************************************************************************
-                    //                  LINEAR DATA
-                    //************************************************************************************
-                    Map<String, List<TimeDataInterface>> valuesMap = ((LinearDataContainerInterface) container).getValuesMap();
-                    Set<String> keySet1 = valuesMap.keySet();
-                    double localMax = ((LinearDataContainerInterface) container).getMaxValueToShow();
-                    double localMin = ((LinearDataContainerInterface) container).getMinValueToShow();
-                    double dt_range = 0;
-                    HashMap<String, Color> hashMap = new HashMap<String, Color>();
-                    for (String subName : keySet1) {
-                        //                                System.out.println("sub name to paint : " + subName);
+                        //************************************************************************************
+                        //                  LINEAR DATA
+                        //************************************************************************************
+                        Map<String, List<TimeDataInterface>> valuesMap = ((LinearDataContainerInterface) container).getValuesMap();
+                        Set<String> keySet1 = valuesMap.keySet();
+                        double localMax = ((LinearDataContainerInterface) container).getMaxValueToShow();
+                        double localMin = ((LinearDataContainerInterface) container).getMinValueToShow();
+                        double dt_range = 0;
+                        HashMap<String, Color> hashMap = new HashMap<String, Color>();
+                        for (String subName : keySet1) {
+                            //                                System.out.println("sub name to paint : " + subName);
 //                            List<TimeDataInterface> dtiData = valuesMap.get(subName);
-                        ((LinearDataContainerInterface) container).setColorToSubChart(subName, (Color) this.supplyColor.getNextPaint());
-                        hashMap.put(subName, (Color) ((LinearDataContainerInterface) container).getColorBySubChartName(subName));
-                        this.legendMap.put(dataBar, hashMap);
+                            ((LinearDataContainerInterface) container).setColorToSubChart(subName, (Color) this.supplyColor.getNextPaint());
+                            hashMap.put(subName, (Color) ((LinearDataContainerInterface) container).getColorBySubChartName(subName));
+                            this.legendMap.put(dataBar, hashMap);
 
-                    }
+                        }
 
 //                        dt_range = localMax - localMin;
 //                        double upScart = dt_range * 0.1;
 //                        double downScart = dt_range * (keySet1.size() == 1 ? 0.1 : 0.3);
 //                        localMax += upScart;
 //                        localMin -= downScart;
-                    dt_range = localMax - localMin;
-                    //                            System.out.println("                                  local Max : " + localMax);
-                    //                            System.out.println("                                  local Min : " + localMin);
+                        dt_range = localMax - localMin;
+                        //                            System.out.println("                                  local Max : " + localMax);
+                        //                            System.out.println("                                  local Min : " + localMin);
 
-                    //drawing horizontal lines
-                    Font linearLegendFont = new Font("SansSerif", Font.PLAIN, 10);
-                    FontMetrics llffm = g.getFontMetrics(linearLegendFont);
-                    ((Graphics2D) g).setPaint(Color.GRAY);
-                    int llffmHeight = llffm.getHeight();
-                    Stroke drawingStroke = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3f, 0f, 3f}, 0);
-                    ((Graphics2D) g).setStroke(drawingStroke);
-                    float highY = dataCoordinateMap.get(dataBar) - increment / 2 + llffmHeight;
-                    float mediumY = dataCoordinateMap.get(dataBar);
-                    float lowY = dataCoordinateMap.get(dataBar) + increment / 2 - llffmHeight;
-                    Line2D.Float lineHigh = new Line2D.Float(sX, highY, sX + wX, highY);
-                    Line2D.Float lineMedium = new Line2D.Float(sX, mediumY, wX + sX, mediumY);
-                    Line2D.Float lineLow = new Line2D.Float(sX, lowY, wX + sX, lowY);
-                    ((Graphics2D) g).draw(lineHigh);
-                    ((Graphics2D) g).draw(lineMedium);
-                    ((Graphics2D) g).draw(lineLow);
-                    //                            g.drawLine(sX, dataCoordinateMap.get(dataBar)+(int)bWidht, wX, dataCoordinateMap.get(dataBar)+(int)bWidht);
-                    float miniSize = mediumY - highY;
-                    while (miniSize > llffmHeight * 3) {
-                        miniSize /= 2;
-                    }
-                    float sss = highY;
-                    //                            System.out.println("dt_range = "+dt_range);
-                    //                            System.out.println("increment = "+increment);
-                    //                            System.out.println("y di local Max : "+dataCoordinateMap.get(dataBar));
-                    float yMax = dataCoordinateMap.get(dataBar) - increment / 2;
-                    //                            System.out.println("sss = "+sss);
-                    double scartino = (dt_range * (sss - yMax)) / increment;
-                    //                            System.out.println("primo scartin  = " + scartino);
-                    //                            System.out.println("primo valore -> "+ (localMax-scartino));
-
-                    int value = (int) (localMax - scartino);
-                    value = (int) (Math.floor(value * 1000)) / 1000;
-                    this.yValuesLinearMap.put(sss + llffmHeight / 4, "" + value);
-                    for (;;) {
-                        sss += miniSize;
-                        if (sss > lowY) {
-                            break;
+                        //drawing horizontal lines
+                        Font linearLegendFont = new Font("SansSerif", Font.PLAIN, 10);
+                        FontMetrics llffm = g.getFontMetrics(linearLegendFont);
+                        ((Graphics2D) g).setPaint(Color.GRAY);
+                        int llffmHeight = llffm.getHeight();
+                        Stroke drawingStroke = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3f, 0f, 3f}, 0);
+                        ((Graphics2D) g).setStroke(drawingStroke);
+                        float highY = dataCoordinateMap.get(dataBar) - increment / 2 + llffmHeight;
+                        float mediumY = dataCoordinateMap.get(dataBar);
+                        float lowY = dataCoordinateMap.get(dataBar) + increment / 2 - llffmHeight;
+                        Line2D.Float lineHigh = new Line2D.Float(sX, highY, sX + wX, highY);
+                        Line2D.Float lineMedium = new Line2D.Float(sX, mediumY, wX + sX, mediumY);
+                        Line2D.Float lineLow = new Line2D.Float(sX, lowY, wX + sX, lowY);
+                        ((Graphics2D) g).draw(lineHigh);
+                        ((Graphics2D) g).draw(lineMedium);
+                        ((Graphics2D) g).draw(lineLow);
+                        //                            g.drawLine(sX, dataCoordinateMap.get(dataBar)+(int)bWidht, wX, dataCoordinateMap.get(dataBar)+(int)bWidht);
+                        float miniSize = mediumY - highY;
+                        while (miniSize > llffmHeight * 3) {
+                            miniSize /= 2;
                         }
-                        scartino = (dt_range * (sss - yMax)) / increment;
-                        value = (int) (localMax - scartino);
+                        float sss = highY;
+                        //                            System.out.println("dt_range = "+dt_range);
+                        //                            System.out.println("increment = "+increment);
+                        //                            System.out.println("y di local Max : "+dataCoordinateMap.get(dataBar));
+                        float yMax = dataCoordinateMap.get(dataBar) - increment / 2;
+                        //                            System.out.println("sss = "+sss);
+                        double scartino = (dt_range * (sss - yMax)) / increment;
+                        //                            System.out.println("primo scartin  = " + scartino);
+                        //                            System.out.println("primo valore -> "+ (localMax-scartino));
+
+                        int value = (int) (localMax - scartino);
                         value = (int) (Math.floor(value * 1000)) / 1000;
-                        this.yValuesLinearMap.put(sss + llffmHeight / 4, ("" + value));
-                        Line2D.Float line = new Line2D.Float(sX, sss, wX + sX, sss);
-                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        ((Graphics2D) g).draw(line);
+                        this.yValuesLinearMap.put(sss + llffmHeight / 4, "" + value);
+                        for (;;) {
+                            sss += miniSize;
+                            if (sss > lowY) {
+                                break;
+                            }
+                            scartino = (dt_range * (sss - yMax)) / increment;
+                            value = (int) (localMax - scartino);
+                            value = (int) (Math.floor(value * 1000)) / 1000;
+                            this.yValuesLinearMap.put(sss + llffmHeight / 4, ("" + value));
+                            Line2D.Float line = new Line2D.Float(sX, sss, wX + sX, sss);
+                            g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            ((Graphics2D) g).draw(line);
 
-                    }
-
-                    //                            Rectangle2D rect1 = new Rectangle2D.Double(sX, yMax+increment-llffmHeight*2, wX, llffmHeight*2);
-                    //                            g1.setPaint(Color.GREEN);
-                    //                            g1.fill(rect1);
-                    g.setFont(linearLegendFont);
-
-                    //----------------------
-                    supplyColor = new PaintSupplier();
-
-                    for (String subName : keySet1) {
-                        //                                System.out.println("sub name to paint : " + subName);
-                        List<TimeDataInterface> dtiData = valuesMap.get(subName);
-                        List<Point> points = new ArrayList<Point>();
-                        //                                Map<String,Point> minMaxOutMap = new HashMap<>();
-                        //                                minMaxOutMap.put("lastMin", null);
-                        //                                minMaxOutMap.put("lastMax", null);
-                        //                                localMin+=dt_range*0.2;
-                        //                                localMax-=dt_range*0.2;
-                        if (!this.subnamesColorMap.containsKey(subName)) {
-                            Paint nextPaint = supplyColor.getNextPaint();
-                            similarTo(alternateColor, (Color) nextPaint);
-                            subnamesColorMap.put(subName, nextPaint);
                         }
+
+                        //                            Rectangle2D rect1 = new Rectangle2D.Double(sX, yMax+increment-llffmHeight*2, wX, llffmHeight*2);
+                        //                            g1.setPaint(Color.GREEN);
+                        //                            g1.fill(rect1);
+                        g.setFont(linearLegendFont);
+
+                        //----------------------
+                        supplyColor = new PaintSupplier();
+
+                        for (String subName : keySet1) {
+                            //                                System.out.println("sub name to paint : " + subName);
+                            List<TimeDataInterface> dtiData = valuesMap.get(subName);
+                            List<Point> points = new ArrayList<Point>();
+                            //                                Map<String,Point> minMaxOutMap = new HashMap<>();
+                            //                                minMaxOutMap.put("lastMin", null);
+                            //                                minMaxOutMap.put("lastMax", null);
+                            //                                localMin+=dt_range*0.2;
+                            //                                localMax-=dt_range*0.2;
+                            Paint nextPaint = ((LinearDataContainerInterface) container).getColorBySubChartName(subName);
+                            if (nextPaint == null) {
+                                nextPaint = supplyColor.getNextPaint();
+                                similarTo(alternateColor, (Color) nextPaint);
+                            }
+//                            if (!this.subnamesColorMap.containsKey(subName)) {
+//                                Paint nextPaint = supplyColor.getNextPaint();
+//                                similarTo(alternateColor, (Color) nextPaint);
+                            subnamesColorMap.put(subName, nextPaint);
+//                            }
 //                            Paint nextPaint = subnamesColorMap.get(subName);
-                        Paint nextPaint = ((LinearDataContainerInterface) container).getColorBySubChartName(subName);
-                        synchronized (dtiData) {
-                            for (TimeDataInterface t : dtiData) {
-                                if (t instanceof TimeValueDataInterface) {
-                                    // TIME VALUE DATA INTERFACE !
 
-                                    //                                        System.out.println("data time stamp : " + t.getTimeStamp().toString());
-                                    long time = t.getTimeStamp().getTime();
-                                    int startDataX = (int) (data_range == 0 ? startRange : (int) (((time - startRange) * wX) / data_range));
+                            boolean chartWithDots = ((LinearDataContainerInterface) container).isChartWithDots(subName);
+                            System.out.println(subName + " ---> " + chartWithDots);
+                            synchronized (dtiData) {
+                                for (TimeDataInterface t : dtiData) {
+                                    if (t instanceof TimeValueDataInterface) {
+                                        // TIME VALUE DATA INTERFACE !
 
-                                    int yData = this.dataCoordinateMap.get(dataBar);
-                                    double value2 = ((TimeValueDataInterface) t).getValue();
-                                    //                                        value : dt_rage = x : height - > x = (value*heingt) / dt_range
-                                    double yyy = dt_range == 0 ? yData : ((value2 - localMin) * increment) / dt_range;
+                                        //                                        System.out.println("data time stamp : " + t.getTimeStamp().toString());
+                                        long time = t.getTimeStamp().getTime();
+                                        int startDataX = (int) (data_range == 0 ? startRange : (int) (((time - startRange) * wX) / data_range));
 
-                                    g1.setPaint(nextPaint);
-                                    int xxxx = startDataX + sX - 4;
-                                    int yyyy = yData - 4 + increment / 2 - (int) (yyy);
-                                    points.add(new Point(xxxx, yyyy));
-                                    if (((LinearDataContainerInterface) container).isDotVisible()) {
-                                        Ellipse2D.Double circle = new Ellipse2D.Double(xxxx, yyyy, 8, 8);
-                                        g1.fill(circle);
-                                    }
+                                        int yData = this.dataCoordinateMap.get(dataBar);
+                                        double value2 = ((TimeValueDataInterface) t).getValue();
+                                        //                                        value : dt_rage = x : height - > x = (value*heingt) / dt_range
+                                        double yyy = dt_range == 0 ? yData : ((value2 - localMin) * increment) / dt_range;
+
+                                        g1.setPaint(nextPaint);
+                                        int xxxx = startDataX + sX - 4;
+                                        int yyyy = yData - 4 + increment / 2 - (int) (yyy);
+                                        points.add(new Point(xxxx, yyyy));
+                                        if (((LinearDataContainerInterface) container).isDotVisible() && chartWithDots) {
+
+                                            Ellipse2D.Double circle = new Ellipse2D.Double(xxxx, yyyy, 8, 8);
+                                            g1.fill(circle);
+                                        }
 //                                               System.out.println("class of data: "+data.getClass().getCanonicalName());
 //                                    int xByDate = this.getXByDate(data.getTimeStamp());
 //                                    int keysCount = currentVisibleBarCount;
 //                                    int increment = (hY / keysCount) < this.minimumIncrement ? this.minimumIncrement : (hY / keysCount);
-                                    if (showDate) {
-                                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy @ HH:mm");
-                                        String dateString = format.format(t.getTimeStamp());
-                                        AnnotationArea area = new AnnotationArea(new Rectangle(xxxx - 5, yyyy - 5, 10, 10), new ICVAnnotation(dataBar, t.getTimeStamp().getTime(), dateString + " value: " + value2, null, separatorVisible));
-                                        if (!this.areasListMap.containsKey(dataBar)) {
-                                            this.areasListMap.put(dataBar, new ArrayList<AnnotationArea>());
+                                        if (showDate) {
+                                            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy @ HH:mm");
+                                            String dateString = format.format(t.getTimeStamp());
+                                            AnnotationArea area = new AnnotationArea(new Rectangle(xxxx - 5, yyyy - 5, 10, 10), new ICVAnnotation(dataBar, t.getTimeStamp().getTime(), dateString + " value: " + value2, null, separatorVisible));
+                                            if (!this.areasListMap.containsKey(dataBar)) {
+                                                this.areasListMap.put(dataBar, new ArrayList<AnnotationArea>());
+                                            }
+                                            this.areasListMap.get(dataBar).add(area);
+                                        } else {
+                                            AnnotationArea area = new AnnotationArea(new Rectangle(xxxx - 5, yyyy - 5, 10, 10),
+                                                    new ICVAnnotation(
+                                                            dataBar,
+                                                            t.getTimeStamp().getTime(),
+                                                            t.getTimeStamp().getTime() + ", " + value2,
+                                                            null,
+                                                            separatorVisible));
+                                            if (!this.areasListMap.containsKey(dataBar)) {
+                                                this.areasListMap.put(dataBar, new ArrayList<AnnotationArea>());
+                                            }
+                                            this.areasListMap.get(dataBar).add(area);
                                         }
-                                        this.areasListMap.get(dataBar).add(area);
-                                    } else {
-                                        AnnotationArea area = new AnnotationArea(new Rectangle(xxxx - 5, yyyy - 5, 10, 10),
-                                                new ICVAnnotation(
-                                                        dataBar,
-                                                        t.getTimeStamp().getTime(),
-                                                        t.getTimeStamp().getTime() + ", " + value2,
-                                                        null,
-                                                        separatorVisible));
-                                        if (!this.areasListMap.containsKey(dataBar)) {
-                                            this.areasListMap.put(dataBar, new ArrayList<AnnotationArea>());
-                                        }
-                                        this.areasListMap.get(dataBar).add(area);
+
                                     }
 
                                 }
+                            }
+                            //                                System.out.println("size of data ->" + dtiData.size());
+                            //                                System.out.println("size of points -> " + points.size());
+                            for (int i = 0; i < points.size(); i++) {
+                                //                                    if (dtiData.get(i) instanceof TimeValueDataInterface) {
+                                //                                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                //A TRATTINI
+                                //                                        float[] dash1 = {2f, 0f, 2f};
+                                //                                        BasicStroke bs1 = new BasicStroke(1, BasicStroke.CAP_BUTT,
+                                //                                                BasicStroke.JOIN_ROUND, 1.0f, dash1, 2f);
+                                //                                        g1.setStroke(bs1);
+
+                                if (i == points.size() - 1) {
+                                    break;
+                                }
+
+                                RenderingHints rh = new RenderingHints(
+                                        RenderingHints.KEY_ANTIALIASING,
+                                        RenderingHints.VALUE_ANTIALIAS_ON);
+
+                                rh.put(RenderingHints.KEY_RENDERING,
+                                        RenderingHints.VALUE_RENDER_QUALITY);
+
+                                g1.setRenderingHints(rh);
+
+                                BasicStroke bs1 = new BasicStroke(2, BasicStroke.CAP_BUTT,
+                                        BasicStroke.JOIN_BEVEL);
+                                g1.setStroke(bs1);
+//                                g1.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+                                g1.drawLine(points.get(i).x + 4, points.get(i).y + 4, points.get(i + 1).x + 4, points.get(i + 1).y + 4);
+                                //                                    }
 
                             }
                         }
-                        //                                System.out.println("size of data ->" + dtiData.size());
-                        //                                System.out.println("size of points -> " + points.size());
-                        for (int i = 0; i < points.size(); i++) {
-                            //                                    if (dtiData.get(i) instanceof TimeValueDataInterface) {
-                            //                                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            //A TRATTINI
-                            //                                        float[] dash1 = {2f, 0f, 2f};
-                            //                                        BasicStroke bs1 = new BasicStroke(1, BasicStroke.CAP_BUTT,
-                            //                                                BasicStroke.JOIN_ROUND, 1.0f, dash1, 2f);
-                            //                                        g1.setStroke(bs1);
+                        //paint max threshold
+                        if (((LinearDataContainerInterface) container).isMaxThresholdPaintable()) {
+                            int maximumThreshold = (int) ((LinearDataContainerInterface) container).getMaximumThreshold();
+                            int yData = this.dataCoordinateMap.get(dataBar);
+                            double yyy = dt_range == 0 ? yData : ((maximumThreshold - localMin) * increment) / dt_range;
 
-                            if (i == points.size() - 1) {
-                                break;
-                            }
-
-                            RenderingHints rh = new RenderingHints(
-                                    RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
-
-                            rh.put(RenderingHints.KEY_RENDERING,
-                                    RenderingHints.VALUE_RENDER_QUALITY);
-
-                            g1.setRenderingHints(rh);
-
-                            BasicStroke bs1 = new BasicStroke(2, BasicStroke.CAP_BUTT,
+                            BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
                                     BasicStroke.JOIN_BEVEL);
                             g1.setStroke(bs1);
-//                                g1.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-                            g1.drawLine(points.get(i).x + 4, points.get(i).y + 4, points.get(i + 1).x + 4, points.get(i + 1).y + 4);
-                            //                                    }
-
-                        }
-                    }
-                    //paint max threshold
-                    if (((LinearDataContainerInterface) container).isMaxThresholdPaintable()) {
-                        int maximumThreshold = (int) ((LinearDataContainerInterface) container).getMaximumThreshold();
-                        int yData = this.dataCoordinateMap.get(dataBar);
-                        double yyy = dt_range == 0 ? yData : ((maximumThreshold - localMin) * increment) / dt_range;
-
-                        BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
-                                BasicStroke.JOIN_BEVEL);
-                        g1.setStroke(bs1);
-                        g1.setPaint(Color.RED);
-                        int yyyy = yData + increment / 2 - (int) (yyy);
-                        Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
-                        ((Graphics2D) g).draw(line);
-                        Font maxFont = new Font("SansSerif", Font.BOLD, 12);
-                        llffm = g.getFontMetrics(maxFont);
-                        g.setFont(maxFont);
+                            g1.setPaint(Color.RED);
+                            int yyyy = yData + increment / 2 - (int) (yyy);
+                            Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
+                            ((Graphics2D) g).draw(line);
+                            Font maxFont = new Font("SansSerif", Font.BOLD, 12);
+                            llffm = g.getFontMetrics(maxFont);
+                            g.setFont(maxFont);
 //                            int maxH = llffm.getHeight();
 //                            int maxW = llffm.stringWidth("max = "+maximumThreshold);
 
-                        g1.drawString("max = " + maximumThreshold, sX + 10, yyyy - 5);
-                    }
-                    //paint min threshold
-                    if (((LinearDataContainerInterface) container).isMinThresholdPaintable()) {
-                        int minimumThreshold = (int) ((LinearDataContainerInterface) container).getMinimumThreshold();
-                        int yData = this.dataCoordinateMap.get(dataBar);
-                        double yyy = dt_range == 0 ? yData : ((minimumThreshold - localMin) * increment) / dt_range;
-
-                        BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
-                                BasicStroke.JOIN_BEVEL);
-                        g1.setStroke(bs1);
-                        g1.setPaint(new Color(137, 0, 0));
-                        int yyyy = yData + increment / 2 - (int) (yyy);
-                        Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
-                        ((Graphics2D) g).draw(line);
-                        Font minFont = new Font("SansSerif", Font.BOLD, 12);
-                        llffm = g.getFontMetrics(minFont);
-                        g.setFont(minFont);
-                        g1.drawString("min = " + minimumThreshold, sX + 10, yyyy - 5);
-                    }
-
-                }
-                //</editor-fold>
-                //</editor-fold>
-                //<editor-fold defaultstate="collapsed" desc="BOOLEAN DATA">
-                if (BooleanDataContainer.class.isInstance(container)) {
-                    Map map = new HashMap();
-                    if (((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, true) != null) {
-                        map.put(((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, true), standarTrueColor);
-                    }
-                    if (((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, false) != null) {
-                        map.put(((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, false), standarFalseColor);
-                    }
-                    this.legendMap.put(dataBar, map);
-//                        System.out.println("SPOTTED : " + dataBar);
-                    int yData = this.dataCoordinateMap.get(dataBar);
-                    RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
-                    g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g1.setPaint(standarFalseColor);
-                    g1.fill(rRect);
-                    List<TimeBooleanDataInterface> values = ((BooleanDataContainer) container).getValues();
-                    for (int i = 0; i < values.size(); i++) {
-
-                        float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
-                        if (startDataX < 0) {
-                            startDataX = -10;
+                            g1.drawString("max = " + maximumThreshold, sX + 10, yyyy - 5);
                         }
+                        //paint min threshold
+                        if (((LinearDataContainerInterface) container).isMinThresholdPaintable()) {
+                            int minimumThreshold = (int) ((LinearDataContainerInterface) container).getMinimumThreshold();
+                            int yData = this.dataCoordinateMap.get(dataBar);
+                            double yyy = dt_range == 0 ? yData : ((minimumThreshold - localMin) * increment) / dt_range;
+
+                            BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
+                                    BasicStroke.JOIN_BEVEL);
+                            g1.setStroke(bs1);
+                            g1.setPaint(new Color(137, 0, 0));
+                            int yyyy = yData + increment / 2 - (int) (yyy);
+                            Line2D.Float line = new Line2D.Float(sX, (float) yyyy, wX + sX, (float) yyyy);
+                            ((Graphics2D) g).draw(line);
+                            Font minFont = new Font("SansSerif", Font.BOLD, 12);
+                            llffm = g.getFontMetrics(minFont);
+                            g.setFont(minFont);
+                            g1.drawString("min = " + minimumThreshold, sX + 10, yyyy - 5);
+                        }
+
+                    }
+                    //</editor-fold>
+                    //</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="BOOLEAN DATA">
+                    if (BooleanDataContainer.class.isInstance(container)) {
+                        Map map = new HashMap();
+                        if (((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, true) != null) {
+                            map.put(((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, true), standarTrueColor);
+                        }
+                        if (((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, false) != null) {
+                            map.put(((BooleanDataContainer) container).getLabelByBooleanValue(dataBar, false), standarFalseColor);
+                        }
+                        this.legendMap.put(dataBar, map);
+//                        System.out.println("SPOTTED : " + dataBar);
+                        int yData = this.dataCoordinateMap.get(dataBar);
+                        RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
+                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g1.setPaint(standarFalseColor);
+                        g1.fill(rRect);
+                        List<TimeBooleanDataInterface> values = ((BooleanDataContainer) container).getValues();
+                        for (int i = 0; i < values.size(); i++) {
+
+                            float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                            if (startDataX < 0) {
+                                startDataX = -10;
+                            }
 //                            if (startDataX + sX > eX && i!=0) {
 //                                break;
 //                            }
 
-                        if (i == 0 && !values.get(i).isTrue()) {
-                            rRect = new RoundRectangle2D.Float(sX, yData - bWidht, startDataX, bWidht * 2, 0, 0);
+                            if (i == 0 && !values.get(i).isTrue()) {
+                                rRect = new RoundRectangle2D.Float(sX, yData - bWidht, startDataX, bWidht * 2, 0, 0);
+                                g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                g1.setPaint(this.standarTrueColor);
+                                g1.fill(rRect);
+
+                            }
+                            if (i == values.size() - 1 && values.get(i).isTrue()) {
+                                rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, eX - sX - startDataX, bWidht * 2, 0, 0);
+                                g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                g1.setPaint(this.standarTrueColor);
+                                g1.fill(rRect);
+                                break;
+
+                            }
+                            if (i == values.size() - 1) {
+                                break;
+                            }
+
+                            int endDataX = (int) (((values.get(i + 1).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                            if (sX + endDataX > eX) {
+                                endDataX = eX - sX;
+                            }
+
+                            rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
                             g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            g1.setPaint(this.standarTrueColor);
+                            g1.setPaint(values.get(i).isTrue() ? this.standarTrueColor : this.standarFalseColor);
                             g1.fill(rRect);
 
                         }
-                        if (i == values.size() - 1 && values.get(i).isTrue()) {
-                            rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, eX - sX - startDataX, bWidht * 2, 0, 0);
-                            g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            g1.setPaint(this.standarTrueColor);
-                            g1.fill(rRect);
-                            break;
-
-                        }
-                        if (i == values.size() - 1) {
-                            break;
-                        }
-
-                        int endDataX = (int) (((values.get(i + 1).getTimeStamp().getTime() - startRange) * wX) / data_range);
-                        if (sX + endDataX > eX) {
-                            endDataX = eX - sX;
-                        }
-
-                        rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
-                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g1.setPaint(values.get(i).isTrue() ? this.standarTrueColor : this.standarFalseColor);
-                        g1.fill(rRect);
 
                     }
-
-                }
-                //</editor-fold>
-                //<editor-fold defaultstate="collapsed" desc="STATE DATA">
-                if (MultiStateContainerInterface.class.isInstance(container)) {
-                    Set<String> possibleStates = ((MultiStateContainerInterface) container).getPossibleStates();
-                    Map map = new HashMap();
-                    for (String state : possibleStates) {
-                        map.put(state, ((MultiStateContainerInterface) container).getColorByState(state));
-                    }
-                    this.legendMap.put(dataBar, map);
+                    //</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="STATE DATA">
+                    if (MultiStateContainerInterface.class.isInstance(container)) {
+                        Set<String> possibleStates = ((MultiStateContainerInterface) container).getPossibleStates();
+                        Map map = new HashMap();
+                        for (String state : possibleStates) {
+                            map.put(state, ((MultiStateContainerInterface) container).getColorByState(state));
+                        }
+                        this.legendMap.put(dataBar, map);
 //                        System.out.println("SPOTTED : " + dataBar);
-                    int yData = this.dataCoordinateMap.get(dataBar);
-                    //BASE RECTANGLE
-                    RoundRectangle2D.Float base = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
-                    g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g1.setPaint(((MultiStateContainerInterface) container).getDefault());
-                    g1.fill(base);
-                    List<StateDataSupporter> values = ((MultiStateContainerInterface) container).getValues();
-                    for (int i = 0; i < values.size(); i++) {
+                        int yData = this.dataCoordinateMap.get(dataBar);
+                        //BASE RECTANGLE
+                        RoundRectangle2D.Float base = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
+                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g1.setPaint(((MultiStateContainerInterface) container).getDefault());
+                        g1.fill(base);
+                        List<StateDataSupporter> values = ((MultiStateContainerInterface) container).getValues();
+                        for (int i = 0; i < values.size(); i++) {
 
-                        float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
-                        if (startDataX < 0) {
-                            startDataX = -10;
-                        }
-                        if (startDataX + sX > eX) {
-                            break;
-                        }
+                            float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                            if (startDataX < 0) {
+                                startDataX = -10;
+                            }
+                            if (startDataX + sX > eX) {
+                                break;
+                            }
 
 //                            if (i == 0) {
 //                                RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX, yData - bWidht, startDataX, bWidht * 2, 0, 0);
@@ -2074,59 +2094,59 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 //                                g1.fill(rRect);
 //
 //                            }
-                        if (i == values.size() - 1) {
-                            RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, eX - sX - startDataX, bWidht * 2, 0, 0);
+                            if (i == values.size() - 1) {
+                                RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, eX - sX - startDataX, bWidht * 2, 0, 0);
+                                g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                g1.setPaint(((MultiStateContainerInterface) container).getColorByState(values.get(i).getState()));
+                                g1.fill(rRect);
+                                break;
+
+                            }
+                            if (i == values.size() - 1) {
+                                break;
+                            }
+
+                            int endDataX = (int) (((values.get(i + 1).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                            if (sX + endDataX > eX) {
+                                endDataX = eX - sX;
+                            }
+
+                            RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
                             g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                             g1.setPaint(((MultiStateContainerInterface) container).getColorByState(values.get(i).getState()));
                             g1.fill(rRect);
-                            break;
 
                         }
-                        if (i == values.size() - 1) {
-                            break;
+
+                    }
+                    //</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="IMPULSIVE BOOLEAN DATA">
+                    if (ImpulsiveBooleanDataContainer.class.isInstance(container)) {
+                        long idleTime = ((ImpulsiveBooleanDataContainer) container).getIdleTime();
+                        Map map = new HashMap();
+                        if (((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, true) != null) {
+                            map.put(((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, true), standarTrueColor);
                         }
-
-                        int endDataX = (int) (((values.get(i + 1).getTimeStamp().getTime() - startRange) * wX) / data_range);
-                        if (sX + endDataX > eX) {
-                            endDataX = eX - sX;
+                        if (((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, false) != null) {
+                            map.put(((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, false), standarFalseColor);
                         }
-
-                        RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
-                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g1.setPaint(((MultiStateContainerInterface) container).getColorByState(values.get(i).getState()));
-                        g1.fill(rRect);
-
-                    }
-
-                }
-                //</editor-fold>
-                //<editor-fold defaultstate="collapsed" desc="IMPULSIVE BOOLEAN DATA">
-                if (ImpulsiveBooleanDataContainer.class.isInstance(container)) {
-                    long idleTime = ((ImpulsiveBooleanDataContainer) container).getIdleTime();
-                    Map map = new HashMap();
-                    if (((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, true) != null) {
-                        map.put(((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, true), standarTrueColor);
-                    }
-                    if (((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, false) != null) {
-                        map.put(((ImpulsiveBooleanDataContainer) container).getLabelByBooleanValue(dataBar, false), standarFalseColor);
-                    }
-                    this.legendMap.put(dataBar, map);
+                        this.legendMap.put(dataBar, map);
 //                        System.out.println("SPOTTED : " + dataBar);
-                    int yData = this.dataCoordinateMap.get(dataBar);
-                    RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
-                    g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g1.setPaint(standarFalseColor);
-                    g1.fill(rRect);
-                    List<TimeDataInterface> values = ((ImpulsiveBooleanDataContainer) container).getValues();
-                    for (int i = 0; i < values.size(); i++) {
+                        int yData = this.dataCoordinateMap.get(dataBar);
+                        RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
+                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g1.setPaint(standarFalseColor);
+                        g1.fill(rRect);
+                        List<TimeDataInterface> values = ((ImpulsiveBooleanDataContainer) container).getValues();
+                        for (int i = 0; i < values.size(); i++) {
 
-                        float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
-                        if (startDataX < 0) {
-                            startDataX = -10;
-                        }
-                        if (startDataX + sX > eX) {
-                            break;
-                        }
+                            float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                            if (startDataX < 0) {
+                                startDataX = -10;
+                            }
+                            if (startDataX + sX > eX) {
+                                break;
+                            }
 
 //                            if (i == 0 && !values.get(i).isTrue()) {
 //                                rRect = new RoundRectangle2D.Float(sX, yData - bWidht, startDataX, bWidht * 2, 0, 0);
@@ -2146,127 +2166,127 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 //                            if (i == values.size() - 1) {
 //                                break;
 //                            }
-                        int endDataX = (int) (((values.get(i).getTimeStamp().getTime() + idleTime - startRange) * wX) / data_range);
-                        if (sX + endDataX > eX) {
-                            endDataX = eX - sX;
-                        }
-                        if (endDataX == startDataX) {
-                            rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, 1, bWidht * 2, 0, 0);
-                            g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            g1.setPaint(this.standarTrueColor); //era giallo 
-                            g1.fill(rRect);
-                        } else {
+                            int endDataX = (int) (((values.get(i).getTimeStamp().getTime() + idleTime - startRange) * wX) / data_range);
+                            if (sX + endDataX > eX) {
+                                endDataX = eX - sX;
+                            }
+                            if (endDataX == startDataX) {
+                                rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, 1, bWidht * 2, 0, 0);
+                                g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                g1.setPaint(this.standarTrueColor); //era giallo 
+                                g1.fill(rRect);
+                            } else {
 
-                            rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
-                            g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            g1.setPaint(this.standarTrueColor);
-                            g1.fill(rRect);
+                                rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
+                                g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                g1.setPaint(this.standarTrueColor);
+                                g1.fill(rRect);
+                            }
+
                         }
 
                     }
-
-                }
-                //</editor-fold>
-                //<editor-fold defaultstate="collapsed" desc="CUMULATIVE DATA">
-                if (CumulativeDataContainer.class.isInstance(container)) {
-                    ((CumulativeDataContainer) container).setStartRange(startRange);
-                    int max = ((CumulativeDataContainer) container).getMax();
-                    int augment = 125 / max;
-                    int yData = this.dataCoordinateMap.get(dataBar);
-                    RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
-                    g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g1.setPaint(standarFalseColor);
-                    g1.fill(rRect);
-                    LinearDataContainerInterface<TimeValueSupporterClass> extractData = ((CumulativeDataContainer) container).extractData();
-                    if (extractData == null) {
-                        continue;
-                    }
-                    List<TimeValueSupporterClass> values = extractData.getValuesMap().get(((CumulativeDataContainer) container).getDefaultSubchart());
+                    //</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="CUMULATIVE DATA">
+                    if (CumulativeDataContainer.class.isInstance(container)) {
+                        ((CumulativeDataContainer) container).setStartRange(startRange);
+                        int max = ((CumulativeDataContainer) container).getMax();
+                        int augment = 125 / max;
+                        int yData = this.dataCoordinateMap.get(dataBar);
+                        RoundRectangle2D.Float rRect = new RoundRectangle2D.Float(sX, yData - bWidht, wX, bWidht * 2, 0, 0);
+                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g1.setPaint(standarFalseColor);
+                        g1.fill(rRect);
+                        LinearDataContainerInterface<TimeValueSupporterClass> extractData = ((CumulativeDataContainer) container).extractData();
+                        if (extractData == null) {
+                            continue;
+                        }
+                        List<TimeValueSupporterClass> values = extractData.getValuesMap().get(((CumulativeDataContainer) container).getDefaultSubchart());
 
 //                        values.add(0,new TimeValueSupporterClass(((CumulativeDataContainer) container).getVerystartValue(), ((CumulativeDataContainer) container).getDefaultSubchart(), new Date(this.startRange)));
-                    for (int i = 0; i < values.size(); i++) {
+                        for (int i = 0; i < values.size(); i++) {
 
-                        float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
-                        if (startDataX < 0) {
-                            startDataX = -10;
-                        }
-                        if (startDataX + sX > eX) {
-                            break;
-                        }
-                        int endDataX = 0;
-                        if (i == values.size() - 1) {
+                            float startDataX = (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                            if (startDataX < 0) {
+                                startDataX = -10;
+                            }
+                            if (startDataX + sX > eX) {
+                                break;
+                            }
+                            int endDataX = 0;
+                            if (i == values.size() - 1) {
 
-                            if (values.get(i).getValue() > 0) {
-                                endDataX = eX - sX;
+                                if (values.get(i).getValue() > 0) {
+                                    endDataX = eX - sX;
+                                } else {
+                                    endDataX = (int) (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                                    if (sX + endDataX > eX) {
+                                        endDataX = eX - sX;
+                                    }
+                                }
                             } else {
-                                endDataX = (int) (((values.get(i).getTimeStamp().getTime() - startRange) * wX) / data_range);
+                                endDataX = (int) (((values.get(i + 1).getTimeStamp().getTime() - startRange) * wX) / data_range);
                                 if (sX + endDataX > eX) {
                                     endDataX = eX - sX;
                                 }
                             }
-                        } else {
-                            endDataX = (int) (((values.get(i + 1).getTimeStamp().getTime() - startRange) * wX) / data_range);
-                            if (sX + endDataX > eX) {
-                                endDataX = eX - sX;
-                            }
-                        }
 
-                        rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
-                        g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        if (values.get(i).getValue() == 0) {
+                            rRect = new RoundRectangle2D.Float(sX + startDataX, yData - bWidht, endDataX - startDataX, bWidht * 2, 0, 0);
+                            g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            if (values.get(i).getValue() == 0) {
 //                                System.out.println("non c'è nessuno");
-                            g1.setPaint(this.standarFalseColor);
-                        } else {
+                                g1.setPaint(this.standarFalseColor);
+                            } else {
 //                                System.out.println("c'è: "+values.get(i).getValue());
-                            int cc = (int) (augment * values.get(i).getValue());
+                                int cc = (int) (augment * values.get(i).getValue());
 //                                System.out.println("cc = "+cc);
 //                                System.out.println("max diviso 3 = "+(max/3));
 //                                if(values.get(i).getValue() <= max/3){
 //                                    System.out.println("GIALO");
 //                                    g1.setPaint(new Color(255,125+cc,0));
 //                                }else{
-                            try {
-                                g1.setPaint(new Color(0, 125 + cc, 0));
-                            } catch (Exception ex) {
-                                System.out.println("bad color value: " + 125 + cc);
-                                g1.setPaint(Color.BLACK);
-                            }
+                                try {
+                                    g1.setPaint(new Color(0, 125 + cc, 0));
+                                } catch (Exception ex) {
+                                    System.out.println("bad color value: " + 125 + cc);
+                                    g1.setPaint(Color.BLACK);
+                                }
 //                                }
+                            }
+
+                            g1.fill(rRect);
+
                         }
-
-                        g1.fill(rRect);
-
                     }
+                    //</editor-fold>
                 }
-                //</editor-fold>
             }
-        }
 
 //            for (ContainerDataInterface containerDataInterface : orderedDatabars) {
-        for (String databar : MAIN_ORDERED_KEY_SET) {
+            for (String databar : MAIN_ORDERED_KEY_SET) {
 //                String databar = containerDataInterface.getName();
-            if (!isAnnotationVisible(databar)) {
-                continue;
-            }
-            List<ICVAnnotation> annotations = this.annotationMap.get(databar);
-            if (annotations != null) {
-                if (!areasListMap.containsKey(databar)) {
-                    areasListMap.put(databar, new ArrayList<AnnotationArea>());
-                } else {
-                    areasListMap.get(databar).clear();
+                if (!isAnnotationVisible(databar)) {
+                    continue;
                 }
-                int yData = this.dataCoordinateMap.get(databar);
-                for (ICVAnnotation ann : annotations) {
-                    int x = sX + (int) (((ann.getWhen() - startRange) * wX) / data_range);
-                    int disc = (int) bWidht > 24 ? 24 : (int) bWidht;
+                List<ICVAnnotation> annotations = this.annotationMap.get(databar);
+                if (annotations != null) {
+                    if (!areasListMap.containsKey(databar)) {
+                        areasListMap.put(databar, new ArrayList<AnnotationArea>());
+                    } else {
+                        areasListMap.get(databar).clear();
+                    }
+                    int yData = this.dataCoordinateMap.get(databar);
+                    for (ICVAnnotation ann : annotations) {
+                        int x = sX + (int) (((ann.getWhen() - startRange) * wX) / data_range);
+                        int disc = (int) bWidht > 24 ? 24 : (int) bWidht;
 //                        JLabel label = new JLabel(new ImageIcon(ann.getImage()));
 //                        this.add(label);
 //                        label.setBounds(x - disc, yData - disc, (int) disc * 2, (int) disc * 2);
-                    g1.drawImage(ann.getImage(), x - disc, yData - disc, (int) disc * 2, (int) disc * 2, null);
-                    areasListMap.get(databar).add(new AnnotationArea(new Rectangle(x - disc, yData - disc, (int) disc * 2, (int) disc * 2), ann));
+                        g1.drawImage(ann.getImage(), x - disc, yData - disc, (int) disc * 2, (int) disc * 2, null);
+                        areasListMap.get(databar).add(new AnnotationArea(new Rectangle(x - disc, yData - disc, (int) disc * 2, (int) disc * 2), ann));
 
-                    if (ann instanceof ICVMappableAnnotation) {
-                        this.idAnnotationCenterPointMap.put(((ICVMappableAnnotation) ann).getId(), new Point(x, yData));
+                        if (ann instanceof ICVMappableAnnotation) {
+                            this.idAnnotationCenterPointMap.put(((ICVMappableAnnotation) ann).getId(), new Point(x, yData));
 //                            if (!((ICVMappableAnnotation) ann).getConditions().isEmpty()) {
 //                                List<ICVCondition> conditions = ((ICVMappableAnnotation) ann).getConditions();
 //                                int startingY = yData - disc;
@@ -2293,58 +2313,58 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 //
 //                                }
 //                            }
-                    }
+                        }
 
-                    if (ann.getDescription() != null && !ann.getDescription().isEmpty() && ann.isDescriptionVisible()) {
-                        Font ff2 = new Font("SansSerif", Font.BOLD, 10);
-                        FontMetrics fm3 = g.getFontMetrics(ff2);
-                        g1.setPaint(Color.BLACK);
-                        g.setFont(ff2);
-                        int s_width = fm3.stringWidth(ann.getDescription());
-                        g1.drawString(ann.getDescription(), x - s_width / 2, yData + disc + 10);
-                    }
+                        if (ann.getDescription() != null && !ann.getDescription().isEmpty() && ann.isDescriptionVisible()) {
+                            Font ff2 = new Font("SansSerif", Font.BOLD, 10);
+                            FontMetrics fm3 = g.getFontMetrics(ff2);
+                            g1.setPaint(Color.BLACK);
+                            g.setFont(ff2);
+                            int s_width = fm3.stringWidth(ann.getDescription());
+                            g1.drawString(ann.getDescription(), x - s_width / 2, yData + disc + 10);
+                        }
 
+                    }
                 }
+
+                //TO CONTINUE
             }
 
-            //TO CONTINUE
-        }
+            Rectangle2D rect1 = new Rectangle2D.Double(0, sY, sX, sY + hY);
+            g1.setPaint(backgroundChartColor);
+            g1.fill(rect1);
 
-        Rectangle2D rect1 = new Rectangle2D.Double(0, sY, sX, sY + hY);
-        g1.setPaint(backgroundChartColor);
-        g1.fill(rect1);
+            Rectangle2D rect2 = new Rectangle2D.Double(eX + 1, sY, RIGHT_MARGIN * 2, sY + hY);
+            g1.setPaint(backgroundChartColor);
+            g1.fill(rect2);
 
-        Rectangle2D rect2 = new Rectangle2D.Double(eX + 1, sY, RIGHT_MARGIN * 2, sY + hY);
-        g1.setPaint(backgroundChartColor);
-        g1.fill(rect2);
-
-        g1.setPaint(yAxisDataColor);
-        for (Float yl : this.yValuesLinearMap.keySet()) {
+            g1.setPaint(yAxisDataColor);
+            for (Float yl : this.yValuesLinearMap.keySet()) {
 //                System.out.println("drawing : "+this.yValuesLinearMap.get(yl));
 //                System.out.println("y1 -> "+yl);
-            ((Graphics2D) g).drawString(this.yValuesLinearMap.get(yl), eX + 3, yl);
-        }
+                ((Graphics2D) g).drawString(this.yValuesLinearMap.get(yl), eX + 3, yl);
+            }
 //                                        ((Graphics2D) g).drawString("hi", eX+3, highY+llffmHeight/2);
 //                            ((Graphics2D) g).drawString("50", eX+3, mediumY+llffmHeight/2);
 //                            ((Graphics2D) g).drawString("50", eX+3, lowY+llffmHeight/2);
 
-        int asdr = 0;
-        Stroke drawingStroke = new BasicStroke(1.8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
-        ((Graphics2D) g).setStroke(drawingStroke);
-        int minimumCharStart = Integer.MAX_VALUE;
-        int grandChar = 0;
+            int asdr = 0;
+            Stroke drawingStroke = new BasicStroke(1.8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+            ((Graphics2D) g).setStroke(drawingStroke);
+            int minimumCharStart = Integer.MAX_VALUE;
+            int grandChar = 0;
 //            for (ContainerDataInterface containerDataInterface : orderedDatabars) {
-        for (String dataBar : MAIN_ORDERED_KEY_SET) {
+            for (String dataBar : MAIN_ORDERED_KEY_SET) {
 //                String dataBar = containerDataInterface.getName();
-            String x = new String(dataBar);
-            if (dataBar.length() > maxCharLabel) {
-                x = x.substring(0, maxCharLabel);
-            }
-            Font ff3 = new Font("SansSerif", Font.BOLD, 14);
-            FontMetrics fm2 = g.getFontMetrics(ff3);
-            grandChar = fm2.getHeight();
-            g.setFont(ff3);
-            int s_width = fm2.stringWidth(x);
+                String x = new String(dataBar);
+                if (dataBar.length() > maxCharLabel) {
+                    x = x.substring(0, maxCharLabel);
+                }
+                Font ff3 = new Font("SansSerif", Font.BOLD, 14);
+                FontMetrics fm2 = g.getFontMetrics(ff3);
+                grandChar = fm2.getHeight();
+                g.setFont(ff3);
+                int s_width = fm2.stringWidth(x);
 //                if (LABEL_LENGHT < s_width) {
 //                    LABEL_LENGHT = s_width;
 //                }
@@ -2357,234 +2377,234 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 //                    start_y = sY + (hY / (keysCount * 2));
 //                }
 //                this.dataCoordinateMap.put(dataBar, start_y);
-            g1.setPaint(yAxisDataColor);
-            int act_x = sX - 10 - s_width;
-            if (act_x < minimumCharStart) {
-                minimumCharStart = act_x;
+                g1.setPaint(yAxisDataColor);
+                int act_x = sX - 10 - s_width;
+                if (act_x < minimumCharStart) {
+                    minimumCharStart = act_x;
+                }
+                g.drawString(x, act_x, this.dataCoordinateMap.get(dataBar) - (int) increment / 2 + grandChar);
             }
-            g.drawString(x, act_x, this.dataCoordinateMap.get(dataBar) - (int) increment / 2 + grandChar);
-        }
 
-        for (String dataBar : MAIN_ORDERED_KEY_SET) {
+            for (String dataBar : MAIN_ORDERED_KEY_SET) {
 //            for (ContainerDataInterface containerDataInterface : orderedDatabars) {
 //                String dataBar = containerDataInterface.getName();
-            if (!dividerUnderDatabarToHide.contains(dataBar)) {
-                if (asdr != MAIN_ORDERED_KEY_SET.size() - 1 && separatorVisible) {
-                    g1.setPaint(separatorLineColor);
-                    g.drawLine(minimumCharStart, this.dataCoordinateMap.get(dataBar) + increment / 2, sX + wX + LEFT_MARGIN / 2, this.dataCoordinateMap.get(dataBar) + increment / 2);
+                if (!dividerUnderDatabarToHide.contains(dataBar)) {
+                    if (asdr != MAIN_ORDERED_KEY_SET.size() - 1 && separatorVisible) {
+                        g1.setPaint(separatorLineColor);
+                        g.drawLine(minimumCharStart, this.dataCoordinateMap.get(dataBar) + increment / 2, sX + wX + LEFT_MARGIN / 2, this.dataCoordinateMap.get(dataBar) + increment / 2);
+                    }
                 }
-            }
-            if (this.legendMap.containsKey(dataBar)) {
-                Map<String, Color> legend = this.legendMap.get(dataBar);
-                float legY = this.dataCoordinateMap.get(dataBar) - (int) increment / 2 + grandChar;
-                float consumableTotalYSpace = increment - grandChar;
-                float consumableLocalYSpace = consumableTotalYSpace / legend.size();
-                for (String label : legend.keySet()) {
-                    float space = consumableLocalYSpace * 0.40f < 20 ? consumableLocalYSpace * 0.40f : 20;
-                    float side = consumableLocalYSpace * 0.35f < 20 ? consumableLocalYSpace * 0.35f : 20;
-                    Rectangle2D.Float lRect = new Rectangle2D.Float(sX - 10 - space, legY + space, side, side);
-                    g1.setPaint(legend.get(label));
-                    g1.fill(lRect);
-                    legY += space + side;
-                    g1.setPaint(xAxisDataColor);
-                    //settare il font
-                    Font ff3 = new Font("SansSerif", Font.PLAIN, (int) (consumableLocalYSpace * 0.35f) > 12 ? 12 : (int) (consumableLocalYSpace * 0.35f));
-                    FontMetrics fm2 = g.getFontMetrics(ff3);
-                    grandChar = fm2.getHeight();
-                    g.setFont(ff3);
-                    g.drawString(label, (int) (sX - 10 - space - fm2.stringWidth(label) - 5), (int) (legY - grandChar / 4));
+                if (this.legendMap.containsKey(dataBar)) {
+                    Map<String, Color> legend = this.legendMap.get(dataBar);
+                    float legY = this.dataCoordinateMap.get(dataBar) - (int) increment / 2 + grandChar;
+                    float consumableTotalYSpace = increment - grandChar;
+                    float consumableLocalYSpace = consumableTotalYSpace / legend.size();
+                    for (String label : legend.keySet()) {
+                        float space = consumableLocalYSpace * 0.40f < 20 ? consumableLocalYSpace * 0.40f : 20;
+                        float side = consumableLocalYSpace * 0.35f < 20 ? consumableLocalYSpace * 0.35f : 20;
+                        Rectangle2D.Float lRect = new Rectangle2D.Float(sX - 10 - space, legY + space, side, side);
+                        g1.setPaint(legend.get(label));
+                        g1.fill(lRect);
+                        legY += space + side;
+                        g1.setPaint(xAxisDataColor);
+                        //settare il font
+                        Font ff3 = new Font("SansSerif", Font.PLAIN, (int) (consumableLocalYSpace * 0.35f) > 12 ? 12 : (int) (consumableLocalYSpace * 0.35f));
+                        FontMetrics fm2 = g.getFontMetrics(ff3);
+                        grandChar = fm2.getHeight();
+                        g.setFont(ff3);
+                        g.drawString(label, (int) (sX - 10 - space - fm2.stringWidth(label) - 5), (int) (legY - grandChar / 4));
+                    }
                 }
-            }
 
-            start_y += increment;
-            asdr++;
+                start_y += increment;
+                asdr++;
 //                col = !col;
-        }
+            }
 
-        //arrows  ----------------------------------------->
-        if (arrowsVisible) {
+            //arrows  ----------------------------------------->
+            if (arrowsVisible) {
 
-            g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            for (ICVAnnotationLink iCVAnnotationLink : links) {
-                ICVMappableAnnotation startingAnnotation = iCVAnnotationLink.getStartingAnnotation();
-                ICVMappableAnnotation endingAnnotation = iCVAnnotationLink.getEndingAnnotation();
-                if (idAnnotationCenterPointMap.containsKey(startingAnnotation.getId()) && idAnnotationCenterPointMap.containsKey(endingAnnotation.getId())) {
-                    //dot
-                    Point startArrowPoint = idAnnotationCenterPointMap.get(startingAnnotation.getId());
-                    Point endArrowPoint = idAnnotationCenterPointMap.get(endingAnnotation.getId());
-                    long s1 = startingAnnotation.getWhen();
-                    long s2 = endingAnnotation.getWhen();
+                g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                for (ICVAnnotationLink iCVAnnotationLink : links) {
+                    ICVMappableAnnotation startingAnnotation = iCVAnnotationLink.getStartingAnnotation();
+                    ICVMappableAnnotation endingAnnotation = iCVAnnotationLink.getEndingAnnotation();
+                    if (idAnnotationCenterPointMap.containsKey(startingAnnotation.getId()) && idAnnotationCenterPointMap.containsKey(endingAnnotation.getId())) {
+                        //dot
+                        Point startArrowPoint = idAnnotationCenterPointMap.get(startingAnnotation.getId());
+                        Point endArrowPoint = idAnnotationCenterPointMap.get(endingAnnotation.getId());
+                        long s1 = startingAnnotation.getWhen();
+                        long s2 = endingAnnotation.getWhen();
 //                        if (s1 != null && s2 != null) {
-                    long diff = s2 - s1;
-                    long seconds = diff / 1000 % 60;
-                    long min = diff / (60 * 1000) % 60;
-                    long hours = diff / (60 * 60 * 1000) % 24;
-                    long d = diff / (24 * 60 * 60 * 1000);
+                        long diff = s2 - s1;
+                        long seconds = diff / 1000 % 60;
+                        long min = diff / (60 * 1000) % 60;
+                        long hours = diff / (60 * 60 * 1000) % 24;
+                        long d = diff / (24 * 60 * 60 * 1000);
 
 //                        }
-                    g1.setPaint(iCVAnnotationLink.getArrowColor());
-                    Ellipse2D.Double circle = new Ellipse2D.Double(startArrowPoint.x - 3, startArrowPoint.y - 3, 6, 6);
-                    g1.fill(circle);
-                    //line
-                    double w = Math.abs(startArrowPoint.x - endArrowPoint.x);
-                    double h = Math.abs(startArrowPoint.y - endArrowPoint.y);
-                    double x = Math.min(startArrowPoint.x, endArrowPoint.x);
-                    double y = Math.min(startArrowPoint.y, endArrowPoint.y);
-                    Rectangle2D.Double bounds = new Rectangle2D.Double(x, y, w, h);
-                    Path2D.Double path = new Path2D.Double();
-                    double len = Math.sqrt((startArrowPoint.x - endArrowPoint.x) * (startArrowPoint.x - endArrowPoint.x) + (startArrowPoint.y - endArrowPoint.y) * (startArrowPoint.y - endArrowPoint.y));
+                        g1.setPaint(iCVAnnotationLink.getArrowColor());
+                        Ellipse2D.Double circle = new Ellipse2D.Double(startArrowPoint.x - 3, startArrowPoint.y - 3, 6, 6);
+                        g1.fill(circle);
+                        //line
+                        double w = Math.abs(startArrowPoint.x - endArrowPoint.x);
+                        double h = Math.abs(startArrowPoint.y - endArrowPoint.y);
+                        double x = Math.min(startArrowPoint.x, endArrowPoint.x);
+                        double y = Math.min(startArrowPoint.y, endArrowPoint.y);
+                        Rectangle2D.Double bounds = new Rectangle2D.Double(x, y, w, h);
+                        Path2D.Double path = new Path2D.Double();
+                        double len = Math.sqrt((startArrowPoint.x - endArrowPoint.x) * (startArrowPoint.x - endArrowPoint.x) + (startArrowPoint.y - endArrowPoint.y) * (startArrowPoint.y - endArrowPoint.y));
 
-                    path.moveTo(0, 0);
-                    path.lineTo(len - 10, 0);
-                    path.setWindingRule(Path2D.WIND_NON_ZERO);
-                    Path2D.Double line = path;
-                    Path2D.Double head;
+                        path.moveTo(0, 0);
+                        path.lineTo(len - 10, 0);
+                        path.setWindingRule(Path2D.WIND_NON_ZERO);
+                        Path2D.Double line = path;
+                        Path2D.Double head;
 
-                    path = new Path2D.Double();
-                    path.moveTo(len - 10, 0);
-                    path.lineTo(len - 10, -3);
-                    path.lineTo(len, 0);
-                    path.lineTo(len - 10, +3);
-                    path.closePath();
-                    head = path;
+                        path = new Path2D.Double();
+                        path.moveTo(len - 10, 0);
+                        path.lineTo(len - 10, -3);
+                        path.lineTo(len, 0);
+                        path.lineTo(len - 10, +3);
+                        path.closePath();
+                        head = path;
 
-                    AffineTransform at = AffineTransform.getRotateInstance(endArrowPoint.x - startArrowPoint.x, endArrowPoint.y - startArrowPoint.y, startArrowPoint.x, startArrowPoint.y);
-                    at.concatenate(AffineTransform.getTranslateInstance(startArrowPoint.x, startArrowPoint.y));
-                    line.transform(at);
-                    head.transform(at);
-                    g1.setPaint(iCVAnnotationLink.getArrowColor());
-                    g1.draw(line);
-                    g1.fill(head);
+                        AffineTransform at = AffineTransform.getRotateInstance(endArrowPoint.x - startArrowPoint.x, endArrowPoint.y - startArrowPoint.y, startArrowPoint.x, startArrowPoint.y);
+                        at.concatenate(AffineTransform.getTranslateInstance(startArrowPoint.x, startArrowPoint.y));
+                        line.transform(at);
+                        head.transform(at);
+                        g1.setPaint(iCVAnnotationLink.getArrowColor());
+                        g1.draw(line);
+                        g1.fill(head);
 
-                    Font font = new Font("Verdana", Font.BOLD, 10);
-                    g1.setFont(font);
-                    FontMetrics cfm = g1.getFontMetrics(font);
-                    String ansns = null;
-                    if (endingAnnotation.getTriggerText() != null) {
-                        ansns = "for Answer: " + endingAnnotation.getTriggerText();
+                        Font font = new Font("Verdana", Font.BOLD, 10);
+                        g1.setFont(font);
+                        FontMetrics cfm = g1.getFontMetrics(font);
+                        String ansns = null;
+                        if (endingAnnotation.getTriggerText() != null) {
+                            ansns = "for Answer: " + endingAnnotation.getTriggerText();
+                        }
+                        String distance = d + "d " + hours + "h " + min + "m " + seconds + " ss";
+                        int distanceTextLenght = cfm.stringWidth(distance);
+                        if (endingAnnotation.getTriggerText() != null) {
+                            distanceTextLenght = cfm.stringWidth(ansns) > cfm.stringWidth(distance) ? cfm.stringWidth(ansns) : cfm.stringWidth(distance);
+                        }
+                        int beautyDistance = 0;
+                        if (startArrowPoint.y == endArrowPoint.y) {
+                            beautyDistance = distanceTextLenght / 2;
+                        }
+                        RoundRectangle2D.Float r2r = new RoundRectangle2D.Float(
+                                startArrowPoint.x + ((endArrowPoint.x - startArrowPoint.x) / 2) - 3 - beautyDistance,
+                                ansns != null ? startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - cfm.getHeight() * 2 - 6 : startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - cfm.getHeight() - 6,
+                                distanceTextLenght + 6,
+                                ansns != null ? cfm.getHeight() * 2 : cfm.getHeight(),
+                                6,
+                                6
+                        );
+                        g1.setPaint(new Color(255, 255, 255, 200));
+                        g1.fill(r2r);
+                        g1.setPaint(iCVAnnotationLink.getArrowColor());
+
+                        if (ansns != null) {
+                            g1.drawString(ansns, startArrowPoint.x + ((endArrowPoint.x - startArrowPoint.x) / 2) - beautyDistance, startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - 25);
+                        }
+                        g1.drawString(distance, startArrowPoint.x + ((endArrowPoint.x - startArrowPoint.x) / 2) - beautyDistance, startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - 10);
+
                     }
-                    String distance = d + "d " + hours + "h " + min + "m " + seconds + " ss";
-                    int distanceTextLenght = cfm.stringWidth(distance);
-                    if (endingAnnotation.getTriggerText() != null) {
-                        distanceTextLenght = cfm.stringWidth(ansns) > cfm.stringWidth(distance) ? cfm.stringWidth(ansns) : cfm.stringWidth(distance);
-                    }
-                    int beautyDistance = 0;
-                    if (startArrowPoint.y == endArrowPoint.y) {
-                        beautyDistance = distanceTextLenght / 2;
-                    }
-                    RoundRectangle2D.Float r2r = new RoundRectangle2D.Float(
-                            startArrowPoint.x + ((endArrowPoint.x - startArrowPoint.x) / 2) - 3 - beautyDistance,
-                            ansns != null ? startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - cfm.getHeight() * 2 - 6 : startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - cfm.getHeight() - 6,
-                            distanceTextLenght + 6,
-                            ansns != null ? cfm.getHeight() * 2 : cfm.getHeight(),
-                            6,
-                            6
-                    );
-                    g1.setPaint(new Color(255, 255, 255, 200));
-                    g1.fill(r2r);
-                    g1.setPaint(iCVAnnotationLink.getArrowColor());
-
-                    if (ansns != null) {
-                        g1.drawString(ansns, startArrowPoint.x + ((endArrowPoint.x - startArrowPoint.x) / 2) - beautyDistance, startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - 25);
-                    }
-                    g1.drawString(distance, startArrowPoint.x + ((endArrowPoint.x - startArrowPoint.x) / 2) - beautyDistance, startArrowPoint.y + ((endArrowPoint.y - startArrowPoint.y) / 2) - 10);
 
                 }
 
+                for (ICVArrow iCVArrow : arrows) {
+                    //draw start dot
+                    Ellipse2D.Double circle = new Ellipse2D.Double(iCVArrow.getStart().x - 2, iCVArrow.getStart().y - 2, 4, 4);
+                    g1.fill(circle);
+                    //draw line
+                    //draw oriented triangle
+                }
             }
-
-            for (ICVArrow iCVArrow : arrows) {
-                //draw start dot
-                Ellipse2D.Double circle = new Ellipse2D.Double(iCVArrow.getStart().x - 2, iCVArrow.getStart().y - 2, 4, 4);
-                g1.fill(circle);
-                //draw line
-                //draw oriented triangle
-            }
-        }
 
 //            for (ContainerDataInterface containerDataInterface : orderedDatabars) {
 //                String databar = containerDataInterface.getName();
-        for (String databar : MAIN_ORDERED_KEY_SET) {
-            if (!isAnnotationVisible(databar)) {
-                continue;
-            }
-            int yData = this.dataCoordinateMap.get(databar);
+            for (String databar : MAIN_ORDERED_KEY_SET) {
+                if (!isAnnotationVisible(databar)) {
+                    continue;
+                }
+                int yData = this.dataCoordinateMap.get(databar);
 
 //                if (!areasListMap.containsKey(databar)) {
 //                        areasListMap.put(databar, new ArrayList<AnnotationArea>());
 //                    } else {
 //                        areasListMap.get(databar).clear();
 //                    }
-            List<ICVAnnotation> annotations = this.annotationMap.get(databar);
-            if (annotations == null) {
-                continue;
-            }
-            for (ICVAnnotation ann : annotations) {
+                List<ICVAnnotation> annotations = this.annotationMap.get(databar);
+                if (annotations == null) {
+                    continue;
+                }
+                for (ICVAnnotation ann : annotations) {
 
-                if (ann instanceof ICVMappableAnnotation) {
-                    int x = sX + (int) (((ann.getWhen() - startRange) * wX) / data_range);
-                    int disc = (int) bWidht > 24 ? 24 : (int) bWidht;
+                    if (ann instanceof ICVMappableAnnotation) {
+                        int x = sX + (int) (((ann.getWhen() - startRange) * wX) / data_range);
+                        int disc = (int) bWidht > 24 ? 24 : (int) bWidht;
 //                        this.idAnnotationCenterPointMap.put(((ICVMappableAnnotation) ann).getId(), new Point(x, yData));
-                    Font ff2 = new Font("Tahoma", Font.BOLD, 9);
-                    FontMetrics fm3 = g.getFontMetrics(ff2);
-                    if (!((ICVMappableAnnotation) ann).getConditions().isEmpty()) {
-                        List<ICVCondition> conditions = ((ICVMappableAnnotation) ann).getConditions();
-                        int max = 0;
-                        for (ICVCondition condition : conditions) {
-                            if (condition instanceof ICVBooleanStateCondition) {
-                                boolean desiderateState = ((ICVBooleanStateCondition) condition).isDesiredState();
-                                String conditionName = desiderateState ? ((ICVBooleanStateCondition) condition).getPositiveConditionName() : ((ICVBooleanStateCondition) condition).getNegativeConditionName();
-                                int s_width = fm3.stringWidth("& " + conditionName);
-                                if (s_width > max) {
-                                    max = s_width;
+                        Font ff2 = new Font("Tahoma", Font.BOLD, 9);
+                        FontMetrics fm3 = g.getFontMetrics(ff2);
+                        if (!((ICVMappableAnnotation) ann).getConditions().isEmpty()) {
+                            List<ICVCondition> conditions = ((ICVMappableAnnotation) ann).getConditions();
+                            int max = 0;
+                            for (ICVCondition condition : conditions) {
+                                if (condition instanceof ICVBooleanStateCondition) {
+                                    boolean desiderateState = ((ICVBooleanStateCondition) condition).isDesiredState();
+                                    String conditionName = desiderateState ? ((ICVBooleanStateCondition) condition).getPositiveConditionName() : ((ICVBooleanStateCondition) condition).getNegativeConditionName();
+                                    int s_width = fm3.stringWidth("& " + conditionName);
+                                    if (s_width > max) {
+                                        max = s_width;
+                                    }
                                 }
                             }
-                        }
-                        RoundRectangle2D.Float r2r = new RoundRectangle2D.Float(
-                                x - max / 2,
-                                yData - disc - (conditions.size() * fm3.getHeight()),
-                                max,
-                                (conditions.size() * fm3.getHeight()),
-                                6,
-                                6
-                        );
-                        g1.setPaint(new Color(240, 248, 0, 200));
-                        g1.fill(r2r);
+                            RoundRectangle2D.Float r2r = new RoundRectangle2D.Float(
+                                    x - max / 2,
+                                    yData - disc - (conditions.size() * fm3.getHeight()),
+                                    max,
+                                    (conditions.size() * fm3.getHeight()),
+                                    6,
+                                    6
+                            );
+                            g1.setPaint(new Color(240, 248, 0, 200));
+                            g1.fill(r2r);
 
-                        int startingY = yData - disc;
+                            int startingY = yData - disc;
 
-                        for (ICVCondition condition : conditions) {
-                            if (condition instanceof ICVBooleanStateCondition) {
-                                boolean desiderateState = ((ICVBooleanStateCondition) condition).isDesiredState();
-                                String conditionName = desiderateState ? ((ICVBooleanStateCondition) condition).getPositiveConditionName() : ((ICVBooleanStateCondition) condition).getNegativeConditionName();
+                            for (ICVCondition condition : conditions) {
+                                if (condition instanceof ICVBooleanStateCondition) {
+                                    boolean desiderateState = ((ICVBooleanStateCondition) condition).isDesiredState();
+                                    String conditionName = desiderateState ? ((ICVBooleanStateCondition) condition).getPositiveConditionName() : ((ICVBooleanStateCondition) condition).getNegativeConditionName();
 
 //                                    g1.setPaint(iCVAnnotationLink.getArrowColor());
-                                g1.setRenderingHint(
-                                        RenderingHints.KEY_TEXT_ANTIALIASING,
-                                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                                    g1.setRenderingHint(
+                                            RenderingHints.KEY_TEXT_ANTIALIASING,
+                                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-                                g1.setRenderingHint(
-                                        RenderingHints.KEY_TEXT_ANTIALIASING,
-                                        RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+                                    g1.setRenderingHint(
+                                            RenderingHints.KEY_TEXT_ANTIALIASING,
+                                            RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
-                                g1.setPaint(desiderateState ? new Color(91, 140, 15) : standarFalseColor);
-                                g1.setFont(ff2);
-                                int s_width = fm3.stringWidth("& " + conditionName);
+                                    g1.setPaint(desiderateState ? new Color(91, 140, 15) : standarFalseColor);
+                                    g1.setFont(ff2);
+                                    int s_width = fm3.stringWidth("& " + conditionName);
 //                                    if(s_width > max){
 //                                        max = s_width;
 //                                    }
-                                g1.drawString("& " + conditionName, x - s_width / 2, startingY);
-                                startingY -= (fm3.getHeight());
+                                    g1.drawString("& " + conditionName, x - s_width / 2, startingY);
+                                    startingY -= (fm3.getHeight());
+
+                                }
 
                             }
-
                         }
                     }
                 }
             }
-        }
 
-        //start ZOOM
+            //start ZOOM
 //            if (zoomEnable && startSelection != -1 && endSelection != -1) {
 //
 //                Rectangle2D zoom = new Rectangle2D.Double(startSelection, sY, Math.abs(endSelection - startSelection), hY);
@@ -2598,95 +2618,91 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 //        Graphics2D cg = bImg.createGraphics();
 //        this.paintAll(cg);
 //             System.out.println("need backup : "+needBackup);
-        if (bufferedImg == null && needBackup) {
-            bufferedImg = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
-            this.printAll(bufferedImg.getGraphics());
+            if (bufferedImg == null && needBackup) {
+                bufferedImg = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+                this.printAll(bufferedImg.getGraphics());
 //                System.out.println("created backup");
-            needBackup = false;
-        }
-        if (minimum_red != Long.MIN_VALUE) {
-            int xByDate = getXByDate(new Date(minimum_red));
-            Rectangle2D.Float minRED = new Rectangle2D.Float(sX, sY, xByDate, hY);
-            g1.setPaint(new Color(255, 0, 0, 200));
-            g1.fill(minRED);
-        }
-        if (maximum_red != Long.MAX_VALUE) {
-            int xByDate = getXByDate(new Date(maximum_red));
-            Rectangle2D.Float minRED = new Rectangle2D.Float(sX + xByDate, sY, eX - (xByDate + sX), hY);
-            g1.setPaint(new Color(255, 0, 0, 200));
-            g1.fill(minRED);
-        }
-
-        if (nowLineVisible) {
-            Date now;
-            if(floatableNow!=Long.MIN_VALUE){
-                now = new Date(this.floatableNow);
-            }else{
-                now = new Date();
+                needBackup = false;
             }
-            
-            int xNow = getXByDate(now);
+            if (minimum_red != Long.MIN_VALUE) {
+                int xByDate = getXByDate(new Date(minimum_red));
+                Rectangle2D.Float minRED = new Rectangle2D.Float(sX, sY, xByDate, hY);
+                g1.setPaint(new Color(255, 0, 0, 200));
+                g1.fill(minRED);
+            }
+            if (maximum_red != Long.MAX_VALUE) {
+                int xByDate = getXByDate(new Date(maximum_red));
+                Rectangle2D.Float minRED = new Rectangle2D.Float(sX + xByDate, sY, eX - (xByDate + sX), hY);
+                g1.setPaint(new Color(255, 0, 0, 200));
+                g1.fill(minRED);
+            }
+
+            if (nowLineVisible) {
+                Date now;
+                if (floatableNow != Long.MIN_VALUE) {
+                    now = new Date(this.floatableNow);
+                } else {
+                    now = new Date();
+                }
+
+                int xNow = getXByDate(now);
 //                (int) (((time - startRange) * wX) / data_range);
-            BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
-                    BasicStroke.JOIN_BEVEL);
-            g1.setStroke(bs1);
-            g1.setPaint(Color.BLACK);
-            Line2D.Float line = new Line2D.Float((float) sX + xNow, (float) sY, (float) sX + xNow, (float) eY);
-            g1.draw(line);
-            Font nowFont = new Font("Lucida Console", Font.PLAIN, 12);
-            FontMetrics fontMetrics = g1.getFontMetrics(nowFont);
-            g1.setRenderingHint(
-                    RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-            int stringWidth = fontMetrics.stringWidth(NOW);
-            g1.setFont(nowFont);
+                BasicStroke bs1 = new BasicStroke(3, BasicStroke.CAP_BUTT,
+                        BasicStroke.JOIN_BEVEL);
+                g1.setStroke(bs1);
+                g1.setPaint(Color.BLACK);
+                Line2D.Float line = new Line2D.Float((float) sX + xNow, (float) sY, (float) sX + xNow, (float) eY);
+                g1.draw(line);
+                Font nowFont = new Font("Lucida Console", Font.PLAIN, 12);
+                FontMetrics fontMetrics = g1.getFontMetrics(nowFont);
+                g1.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+                int stringWidth = fontMetrics.stringWidth(NOW);
+                g1.setFont(nowFont);
 
-            RoundRectangle2D.Float rr = new RoundRectangle2D.Float((float) sX + xNow - stringWidth / 2 - 4, (float) sY + 1, (float) stringWidth * 1.5f, fontMetrics.getHeight() + 4, 5, 5);
-            g1.setPaint(Color.BLACK);
-            g1.fill(rr);
-            g1.setPaint(Color.WHITE);
-            g1.drawString(NOW, (float) sX + xNow - stringWidth / 2, (float) sY + fontMetrics.getHeight());
+                RoundRectangle2D.Float rr = new RoundRectangle2D.Float((float) sX + xNow - stringWidth / 2 - 4, (float) sY + 1, (float) stringWidth * 1.5f, fontMetrics.getHeight() + 4, 5, 5);
+                g1.setPaint(Color.BLACK);
+                g1.fill(rr);
+                g1.setPaint(Color.WHITE);
+                g1.drawString(NOW, (float) sX + xNow - stringWidth / 2, (float) sY + fontMetrics.getHeight());
 
-        }
+            }
 
-        for (Date timepoint : extraRectangles) {
-            int middleX = this.getXByDate(timepoint);
-            Rectangle ret = new Rectangle(middleX - 15 + sX, sY + 10, 30, hY - 20);
-            RoundRectangle2D.Float r2r = new RoundRectangle2D.Float(
-                    ret.x,
-                    ret.y,
-                    ret.width,
-                    ret.height,
-                    6,
-                    6
-            );
-            Stroke recStroke = new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
-            g1.setStroke(recStroke);
-            g1.setPaint(extraRectangleColor);
-            g1.draw(r2r);
-            g1.setPaint(new Color(0f, 0f, 1f, 0.2f));
-            g1.fill(r2r);
-        }
+            for (Date timepoint : extraRectangles) {
+                int middleX = this.getXByDate(timepoint);
+                Rectangle ret = new Rectangle(middleX - 15 + sX, sY + 10, 30, hY - 20);
+                RoundRectangle2D.Float r2r = new RoundRectangle2D.Float(
+                        ret.x,
+                        ret.y,
+                        ret.width,
+                        ret.height,
+                        6,
+                        6
+                );
+                Stroke recStroke = new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+                g1.setStroke(recStroke);
+                g1.setPaint(extraRectangleColor);
+                g1.draw(r2r);
+                g1.setPaint(new Color(0f, 0f, 1f, 0.2f));
+                g1.fill(r2r);
+            }
 
-        Rectangle visibleRect = getVisibleRect();
-        startVisibleY = visibleRect.y;
+            Rectangle visibleRect = getVisibleRect();
+            startVisibleY = visibleRect.y;
 
-    }
-    catch (ArithmeticException exc
-
-    
-        ) {
+        } catch (ArithmeticException exc) {
             System.out.println("division by zero detected and ignored :) [double click]");
-        exc.printStackTrace();
-        resetZoom();
+            exc.printStackTrace();
+            resetZoom();
+        }
     }
-}
 
 //    private void generateHeadImg() {
 //        headImg = new BufferedImage(this.getWidth(), sY, BufferedImage.TYPE_INT_RGB);
 //        this.printAll(headImg.getGraphics());
 //    }
-public BufferedImage getHeadImg() {
+    public BufferedImage getHeadImg() {
         return headImg;
     }
 
@@ -3089,35 +3105,28 @@ public BufferedImage getHeadImg() {
         ContainerDataInterface container = dataMap.get(databarFromY);
         Object value = "no data";
 
-if (LinearDataContainerInterface.class  
-
-    .isInstance(container)) {
+        if (LinearDataContainerInterface.class
+                .isInstance(container)) {
             int maxValueToShow = ((LinearDataContainerInterface) container).getMaxValueToShow();
-    int minValueToShow = ((LinearDataContainerInterface) container).getMinValueToShow();
+            int minValueToShow = ((LinearDataContainerInterface) container).getMinValueToShow();
 
-    
-        try {
+            try {
                 int keysCount = currentVisibleBarCount;
-        int increment = (hY / keysCount) < this.minimumIncrement ? this.minimumIncrement : (hY / keysCount);
-        int yData = this.dataCoordinateMap.get(databarFromY);
-        int dt_range = maxValueToShow - minValueToShow;
-        int localMin = minValueToShow;
-        //                                        value : dt_rage = x : height - > x = (value*heingt) / dt_range
-        //                                        value : dt_rage = x : height - > value = (x*dt_rage)/height
+                int increment = (hY / keysCount) < this.minimumIncrement ? this.minimumIncrement : (hY / keysCount);
+                int yData = this.dataCoordinateMap.get(databarFromY);
+                int dt_range = maxValueToShow - minValueToShow;
+                int localMin = minValueToShow;
+                //                                        value : dt_rage = x : height - > x = (value*heingt) / dt_range
+                //                                        value : dt_rage = x : height - > value = (x*dt_rage)/height
 //                int y = yData + increment / 2 - (int) (yyy);
-        int yyy = -y + yData + increment / 2;
-        double value2 = (yyy * dt_range) / increment;
-        return value2 + localMin;
-    }
-    catch (Exception ex
-
-    
-        ) {
+                int yyy = -y + yData + increment / 2;
+                double value2 = (yyy * dt_range) / increment;
+                return value2 + localMin;
+            } catch (Exception ex) {
                 ex.printStackTrace();
-    }
-    return value ;
-}
-else {
+            }
+            return value;
+        } else {
             return null;
         }
     }
@@ -3157,7 +3166,7 @@ else {
     public boolean isInThisArea(int x, int y, Rectangle rect) {
         return x >= rect.x && x <= (rect.x + rect.width) && y >= rect.y && y <= (rect.y + rect.height) ? true : false;
 
-}
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
@@ -3227,37 +3236,37 @@ else {
 //    }
     public class AnnotationArea {
 
-    private Rectangle area;
-    private ICVAnnotation annotation;
+        private Rectangle area;
+        private ICVAnnotation annotation;
 
-    public AnnotationArea(Rectangle area, ICVAnnotation annotation) {
-        this.area = area;
-        this.annotation = annotation;
+        public AnnotationArea(Rectangle area, ICVAnnotation annotation) {
+            this.area = area;
+            this.annotation = annotation;
+        }
+
+        public Rectangle getArea() {
+            return area;
+        }
+
+        public void setArea(Rectangle area) {
+            this.area = area;
+        }
+
+        public ICVAnnotation getAnnotation() {
+            return annotation;
+        }
+
+        public void setAnnotation(ICVAnnotation annotation) {
+            this.annotation = annotation;
+        }
+
     }
 
-    public Rectangle getArea() {
-        return area;
-    }
+    public class ZoomLayerUI extends MyLayer<JComponent> {
 
-    public void setArea(Rectangle area) {
-        this.area = area;
-    }
-
-    public ICVAnnotation getAnnotation() {
-        return annotation;
-    }
-
-    public void setAnnotation(ICVAnnotation annotation) {
-        this.annotation = annotation;
-    }
-
-}
-
-public class ZoomLayerUI extends MyLayer<JComponent> {
-
-    @Override
-    public void paint(Graphics g, JComponent c) {
-        super.paint(g, c);
+        @Override
+        public void paint(Graphics g, JComponent c) {
+            super.paint(g, c);
 
 //            if (zoomEnable && startSelection != -1 && endSelection != -1) {
 //
@@ -3270,16 +3279,16 @@ public class ZoomLayerUI extends MyLayer<JComponent> {
 //                g1.dispose();
 //
 //            }
-        Graphics2D g2 = (Graphics2D) g.create();
-        int w = c.getWidth();
-        int h = c.getHeight();
-        g2.setComposite(AlphaComposite.getInstance(
-                AlphaComposite.SRC_OVER, .5f));
-        g2.setPaint(new GradientPaint(0, 0, Color.yellow, 0, h, Color.red));
-        g2.fillRect(0, 0, w, h);
+            Graphics2D g2 = (Graphics2D) g.create();
+            int w = c.getWidth();
+            int h = c.getHeight();
+            g2.setComposite(AlphaComposite.getInstance(
+                    AlphaComposite.SRC_OVER, .5f));
+            g2.setPaint(new GradientPaint(0, 0, Color.yellow, 0, h, Color.red));
+            g2.fillRect(0, 0, w, h);
 
 //            g2.dispose();
+        }
     }
-}
 
 }
