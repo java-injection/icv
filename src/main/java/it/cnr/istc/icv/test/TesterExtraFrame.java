@@ -4,7 +4,7 @@
  */
 package it.cnr.istc.icv.test;
 
-import it.cnr.istc.extra.MathUtil;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -44,6 +44,7 @@ import it.cnr.istc.icv.engine.ZoomLabeledLayer;
 import it.cnr.istc.icv.engine.listeners.CoordinateListener;
 import it.cnr.istc.icv.engine.listeners.PopupMenuTriggerListener;
 import it.cnr.istc.icv.exceptions.TypeDataMismatchException;
+import it.cnr.istc.icv.extra.MathUtil;
 import it.cnr.istc.icv.logic.ICVAnnotation;
 import it.cnr.istc.icv.logic.ICVMappableAnnotation;
 import java.awt.AWTEvent;

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package it.cnr.istc.extra.test;
+package it.cnr.istc.icv.extra.test;
 
 /**
  *

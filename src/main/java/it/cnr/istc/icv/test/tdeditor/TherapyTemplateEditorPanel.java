@@ -5,7 +5,7 @@
  */
 package it.cnr.istc.icv.test.tdeditor;
 
-import it.cnr.istc.extra.test.SensorTester;
+
 import it.cnr.istc.icv.engine.listeners.PopupMenuTriggerListener;
 import it.cnr.istc.icv.engine.tdelogic.Event;
 import it.cnr.istc.icv.logic.ICVAnnotation;
@@ -13,6 +13,7 @@ import it.cnr.istc.icv.logic.ICVMappableAnnotation;
 import it.cnr.istc.icv.logic.ICVQuestionAnnotation;
 import it.cnr.istc.icv.logic.ICVYesNotQuestionAnnotation;
 import it.cnr.istc.icv.engine.tdelogic.pst.ICVBooleanStateCondition;
+import it.cnr.istc.icv.extra.test.SensorTester;
 import it.cnr.istc.icv.test.ActivityContainerSupporter;
 import java.awt.Color;
 import java.beans.Beans;

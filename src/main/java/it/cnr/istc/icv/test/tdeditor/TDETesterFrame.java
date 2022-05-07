@@ -6,13 +6,12 @@
 
 package it.cnr.istc.icv.test.tdeditor;
 
-import it.cnr.istc.extra.test.SensorTester;
+
 import it.cnr.istc.icv.engine.tdelogic.Event;
 import it.cnr.istc.icv.engine.tdelogic.EventConstants;
+import it.cnr.istc.icv.extra.test.SensorTester;
 import it.cnr.istc.icv.test.ActivityContainerSupporter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import javax.swing.ImageIcon;
 
 /**

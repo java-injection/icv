@@ -4,13 +4,12 @@
  * and open the template in the editor.
  */
 
-package it.cnr.istc.extra;
+package it.cnr.istc.icv.extra;
 
-import it.cnr.istc.extra.test.NewJPanel;
-import it.cnr.istc.extra.test.SensorTester;
+
 import it.cnr.istc.icv.engine.MyJLayer;
 import it.cnr.istc.icv.engine.MyLayer;
-import java.awt.Color;
+import it.cnr.istc.icv.extra.test.SensorTester;
 import java.awt.GridLayout;
 import java.util.logging.Level;
 import java.util.logging.Logger;

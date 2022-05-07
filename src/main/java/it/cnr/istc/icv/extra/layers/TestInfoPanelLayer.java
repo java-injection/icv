@@ -3,19 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.cnr.istc.extra.layers;
+package it.cnr.istc.icv.extra.layers;
 
-import it.cnr.istc.extra.BlinkableGlassPane;
-import it.cnr.istc.extra.BlinkableTesterFrame;
-import it.cnr.istc.extra.test.NewJPanel;
-import it.cnr.istc.extra.test.SensorTester;
+
+import it.cnr.istc.extra.layers.InfoPanelLayer;
 import it.cnr.istc.icv.engine.MyJLayer;
 import it.cnr.istc.icv.engine.MyLayer;
-import it.cnr.istc.icv.engine.ZoomLabeledLayer;
+import it.cnr.istc.icv.extra.BlinkableGlassPane;
 import java.awt.GridLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 

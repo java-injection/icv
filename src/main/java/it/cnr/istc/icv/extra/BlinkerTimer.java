@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package it.cnr.istc.extra;
+package it.cnr.istc.icv.extra;
 
 import java.util.List;
 import javax.swing.Icon;

@@ -6,7 +6,7 @@
 
 package it.cnr.istc.icv.engine.tdelogic.pst;
 
-import it.cnr.istc.extra.Utils;
+
 import it.cnr.istc.icv.engine.tdelogic.pst.exceptions.PSTInvalidRelationException;
 import java.util.ArrayList;
 import java.util.List;

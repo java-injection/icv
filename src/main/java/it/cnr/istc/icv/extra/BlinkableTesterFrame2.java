@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.cnr.istc.extra;
+package it.cnr.istc.icv.extra;
 
-import it.cnr.istc.extra.test.NewJPanel;
-import it.cnr.istc.extra.test.SensorTester;
+
 import it.cnr.istc.icv.engine.MyJLayer;
 import it.cnr.istc.icv.engine.MyLayer;
-import java.awt.GridLayout;
+import it.cnr.istc.icv.extra.test.NewJPanel;
+import it.cnr.istc.icv.extra.test.SensorTester;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.logging.Level;

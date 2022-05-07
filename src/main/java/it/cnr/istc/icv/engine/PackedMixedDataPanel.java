@@ -5,13 +5,13 @@
  */
 package it.cnr.istc.icv.engine;
 
-import it.cnr.istc.extra.MathUtil;
+
 import it.cnr.istc.icv.exceptions.TypeDataMismatchException;
+import it.cnr.istc.icv.extra.MathUtil;
 import it.cnr.istc.icv.test.ActivityContainerSupporter;
 import it.cnr.istc.icv.test.ActivityDataSupporter;
 import it.cnr.istc.icv.test.TesterFrame2;
 import java.awt.Color;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,7 +19,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 
 /**
  *
