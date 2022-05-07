@@ -11,6 +11,7 @@ import java.util.Map;
 import it.cnr.istc.icv.logic.LinearDataContainerInterface;
 import it.cnr.istc.icv.logic.TimeDataInterface;
 import java.awt.Color;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -163,12 +164,14 @@ public class LinearDataSupporter<T extends TimeDataInterface> implements LinearD
     }
 
     @Override
-    public void clearData() {
+    public synchronized void clearData() {
 //        dataMap.clear();
         Set<String> keySet = dataMap.keySet();
         for (String string : keySet) {
-            dataMap.get(string).clear();
+            ((Collection)dataMap.get(string)).clear();
         }
+        dataMap.clear();
+        dataColor.clear();
     }
 
     
