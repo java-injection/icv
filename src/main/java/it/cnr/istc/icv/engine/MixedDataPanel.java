@@ -243,6 +243,7 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
 
     public synchronized void clearLinearDataBar(String databar) {
         ContainerDataInterface get = this.dataMap.get(databar);
+        this.annotationMap.remove(databar);
         if (get instanceof LinearDataContainerInterface) {
             ((LinearDataContainerInterface) get).clearData();
         }
@@ -2280,7 +2281,8 @@ public class MixedDataPanel extends javax.swing.JPanel implements MixedPanelInte
                     int yData = this.dataCoordinateMap.get(databar);
                     for (ICVAnnotation ann : annotations) {
                         int x = sX + (int) (((ann.getWhen() - startRange) * wX) / data_range);
-                        int disc = (int) bWidht > 24 ? 24 : (int) bWidht;
+                        //int disc = (int) bWidht >12 ? 12 : (int) bWidht;
+                        int disc = (int)ann.getSize()/2;
 //                        JLabel label = new JLabel(new ImageIcon(ann.getImage()));
 //                        this.add(label);
 //                        label.setBounds(x - disc, yData - disc, (int) disc * 2, (int) disc * 2);
